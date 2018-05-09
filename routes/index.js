@@ -20,6 +20,12 @@ router.get("/register", function(req, res) {
 // handle register logic
 router.post("/register", function(req, res) {
     var newUser = new User({username:req.body.username});
+    // eval(require("locus"));
+    // set up amin
+    if(req.body.adminCode === "Iamthebest") {
+        newUser.isAdmin = true;
+    }
+    // eval(require("locus"));
    User.register(newUser, req.body.password, function(err, user) { // provide by passport-local-mongoose
        if(err) {
            req.flash("error", err.message);
