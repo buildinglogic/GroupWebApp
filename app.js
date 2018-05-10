@@ -18,6 +18,7 @@ var moment = require("moment");
 var campgroundRoutes = require("./routes/campgrounds");   
 var commentRoutes = require("./routes/comments");
 var indexRoutes = require("./routes/index");
+var contactRoutes = require("./routes/contact");
 
 // seedDB(); // seed the database
 mongoose.connect("mongodb://localhost/yelp_camp");
@@ -51,6 +52,7 @@ app.use(function(req, res, next) {
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes); // take each route, and append "/campgrounds at the start"
 app.use("/campgrounds/:id/comments", commentRoutes);
+app.use("/contact", contactRoutes);
 
 app.listen(process.env.PORT, process.env.IP, function() {
    console.log("YelpCamp has started"); 
