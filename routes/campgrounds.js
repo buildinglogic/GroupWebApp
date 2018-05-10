@@ -87,7 +87,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
   // get data from form and add to campgrounds array
   var name = req.body.campground.name;
   var price = req.body.campground.price;
-  var image = req.body.image;
+//   var image = req.body.image;
   var desc = req.body.campground.description;
   var author = {
       id: req.user._id,
@@ -102,23 +102,23 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     var lng = data[0].longitude;
     var location = data[0].formattedAddress;
     
-    //     // get the uploading image url
-    // cloudinary.uploader.upload(req.file.path, function(result) {
-    //     // add cloudinary url for the image to the campground object under image property
-    //     req.body.campground.image = result.secure_url;
-    // });
-    // var image = req.body.campground.image;
-    var newCampground = {name: name, price: price, image: image, description: desc, author:author, location: location, lat: lat, lng: lng};
-    // eval(require("locus"));
-    // Create a new campground and save to DB
-    Campground.create(newCampground, function(err, newlyCreated){
-        if(err){
-            console.log(err);
-        } else {
-            //redirect back to campgrounds page
-            console.log(newlyCreated);
-            res.redirect("/campgrounds");
-        }
+        // get the uploading image url
+    cloudinary.uploader.upload(req.file.path, function(result) {
+        // add cloudinary url for the image to the campground object under image property
+        req.body.campground.image = result.secure_url;
+        var image = req.body.campground.image;
+        var newCampground = {name: name, price: price, image: image, description: desc, author:author, location: location, lat: lat, lng: lng};
+        eval(require("locus"));
+        // Create a new campground and save to DB
+        Campground.create(newCampground, function(err, newlyCreated){
+            if(err){
+                console.log(err);
+            } else {
+                //redirect back to campgrounds page
+                console.log(newlyCreated);
+                res.redirect("/campgrounds");
+            }
+        });
     });
   });
 });
