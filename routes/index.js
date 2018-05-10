@@ -10,6 +10,7 @@ var passport = require("passport");
 var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
+var request = require("request");
 
 // root route
 router.get("/", function(req, res) {
@@ -23,31 +24,50 @@ router.get("/register", function(req, res) {
 
 // handle register logic
 router.post("/register", function(req, res) {
-    var newUser = new User(
-        {
-            username:req.body.username,
-            firstName:req.body.firstName,
-            lastName:req.body.lastName,
-            email:req.body.email,
-            avatar:req.body.avatar,
-        });
-    // eval(require("locus"));
-    // set up amin
-    if(req.body.adminCode === "Iamthebest") {
-        newUser.isAdmin = true;
+    const captcha = req.body["g-recaptcha-response"];
+    if (!captcha) {
+      console.log(req.body);
+      req.flash("error", "Please select captcha");
+      return res.redirect("/register");
     }
-    // eval(require("locus"));
-   User.register(newUser, req.body.password, function(err, user) { // provide by passport-local-mongoose
-       if(err) {
-           req.flash("error", err.message);
-           res.redirect("/register");
-        //   return res.render("register", {"error": err.message});
-       }
-       passport.authenticate("local")(req, res, function() {
-          req.flash("success", "Welcome to YelpCamp " + user.username);
-          res.redirect("/campgrounds"); 
+    // secret key
+    var secretKey = process.env.CAPTCHA;
+    // Verify URL
+    var verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}&remoteip=${req
+      .connection.remoteAddress}`;
+    // Make request to Verify URL
+    request.get(verifyURL, (err, response, body) => {
+        // if not successful
+        if (body.success !== undefined && !body.success) {
+            req.flash("error", "Captcha Failed");
+            return res.redirect("/contact");
+        }
+    
+        var newUser = new User(
+            {
+                username:req.body.username,
+                firstName:req.body.firstName,
+                lastName:req.body.lastName,
+                email:req.body.email,
+                avatar:req.body.avatar,
+            });
+        // set up amin
+        if(req.body.adminCode === process.env.ADMINCODE) {
+            newUser.isAdmin = true;
+        }
+
+       User.register(newUser, req.body.password, function(err, user) { // provide by passport-local-mongoose
+           if(err) {
+               req.flash("error", err.message);
+               res.redirect("/register");
+            //   return res.render("register", {"error": err.message});
+           }
+           passport.authenticate("local")(req, res, function() {
+              req.flash("success", "Welcome to YelpCamp " + user.username);
+              res.redirect("/campgrounds"); 
+           });
        });
-   }) 
+    });
 });
 
 // show login form
