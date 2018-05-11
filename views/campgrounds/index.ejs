@@ -20,21 +20,21 @@
         </div>
     </header>
     
-    <div class="row text-center" style="display:flex; flex-wrap:warp;">
+    <div class="row text-center" id="campground-grid">
         <% campgrounds.forEach(function(campground){ %>
-            <div class="col-md-3 col-sm-6">
-                <div class="img-thumbnail">
-                    <img class="img-fluid" src="<%= campground.image%>">
-                    <div class="caption">
-                        <h4><%= campground.name %></h4>
-                    </div>
-                    <p>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card">
+                    <img class="card-img-top" src="<%= campground.image%>" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= campground.name %></h5>
+                        <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
                         <a href="/campgrounds/<%= campground._id%>" class="btn btn-primary">More info</a>
-                    </p>
+                    </div>
                 </div>
             </div>
         <% }); %>
     </div>
+    
     
     <!--display page number index-->
     <hr>
