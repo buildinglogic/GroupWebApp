@@ -24,7 +24,7 @@ var contactRoutes = require("./routes/contact");
 // mongoose.connect("mongodb://localhost/yelp_camp");
 mongoose.connect("mongodb://kangnan:625605657@ds119800.mlab.com:19800/yelpcamp_kangnan");
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({extened:true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
 app.use(flash());
