@@ -4,16 +4,16 @@
 <div class="container">
     <div class="row"> 
         <div class="col">
-            <h1 style="text-align:center">Edit <%= campground.name %></h1>
+            <h1 style="text-align:center">Edit <%= publication.name %></h1>
             <div style="width:30%; margin:25px auto">
-                <form action="/campgrounds/<%= campground._id %>/?_method=PUT" method="POST" enctype="multipart/form-data">
+                <form action="/publications/<%= publication._id %>/?_method=PUT" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">Name</label>
-                        <input class="form-control" type="text" id="name" name = "campground[name]" value="<%= campground.name%>">
+                        <input class="form-control" type="text" id="name" name = "publication[name]" value="<%= publication.name%>">
                     </div>
                     <div class="form-group">
                         <label for="price">Price</label>
-                        <input class="form-control" type="number" id="price" name = "campground[price]" value="<%= campground.price%>" min="0.01" step="0.01">
+                        <input class="form-control" type="number" id="price" name = "publication[price]" value="<%= publication.price%>" min="0.01" step="0.01">
                     </div>
                     <div class="form-group">
                         <label for="image">Image</label>
@@ -21,17 +21,17 @@
                     </div>
                     <div class="form-group">
                         <label for="description">Description</label>
-                        <input class="form-control" type="text" id="description" name= "campground[description]" value="<%= campground.description%>">
+                        <input class="form-control" type="text" id="description" name= "publication[description]" value="<%= publication.description%>">
                     </div>
                     <div class="form-group">
                         <label for="location">Location</label>
-                        <input class="form-control" type="text" name="campground[location]" id="location" value="<%= campground.location %>">
+                        <input class="form-control" type="text" name="publication[location]" id="location" value="<%= publication.location %>">
                     </div>
                     <div class="form-group">
                         <button class="btn btn-lg btn-secondary btn-block">Submit</button>
                     </div>
                 </form>
-                <a style="text-align:center" href="/campgrounds">Add new campground</a>
+                <a style="text-align:center" href="/publications">Add new publication</a>
             </div>
         </div>
 

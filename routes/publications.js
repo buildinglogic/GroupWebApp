@@ -1,6 +1,6 @@
 var express = require("express");
 var router  = express.Router();
-var Campground = require("../models/campground");
+var Publication = require("../models/publication");
 var middleware = require("../middleware");
 var NodeGeocoder = require('node-geocoder');
 var multer = require('multer');
@@ -38,7 +38,7 @@ cloudinary.config({
 });
 
 
-//INDEX - show all campgrounds
+//INDEX - show all publications
 router.get("/", function(req, res){
     var perPage = 8;
     var pageQuery = parseInt(req.query.page);
@@ -46,17 +46,17 @@ router.get("/", function(req, res){
 
     if (req.query.search) {
        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-       Campground.find({ "name": regex }).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundCampgrounds) {
-           Campground.count().exec(function(err, count) {
+       Publication.find({ "name": regex }).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
+           Publication.count().exec(function(err, count) {
                if(err) {
                    console.log(err);
                } else {
                    var error;
-                   if(foundCampgrounds.length < 1) {
+                   if(foundPublications.length < 1) {
                        error = "no matched results found";
                    }
-                  res.render("campgrounds/index", { 
-                      campgrounds: foundCampgrounds, 
+                  res.render("publications/index", { 
+                      publications: foundPublications, 
                       error:error, 
                       current:pageNumber,
                       pages:Math.ceil(count / perPage)
@@ -65,14 +65,14 @@ router.get("/", function(req, res){
            });
        }); 
     } else {
-        // Get all campgrounds from DB
-        Campground.find({}).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundCampgrounds) {
-           Campground.count().exec(function(err, count) {
+        // Get all publications from DB
+        Publication.find({}).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
+           Publication.count().exec(function(err, count) {
                if(err){
                    console.log(err);
                } else {
-                   res.render("campgrounds/index", { 
-                      campgrounds: foundCampgrounds, 
+                   res.render("publications/index", { 
+                      publications: foundPublications, 
                       current:pageNumber,
                       pages:Math.ceil(count / perPage)
                   });
@@ -82,18 +82,18 @@ router.get("/", function(req, res){
     }
 });
 
-//CREATE - add new campground to DB
+//CREATE - add new publication to DB
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
-  // get data from form and add to campgrounds array
-  var name = req.body.campground.name;
-  var price = req.body.campground.price;
+  // get data from form and add to publications array
+  var name = req.body.publication.name;
+  var price = req.body.publication.price;
 //   var image = req.body.image;
-  var desc = req.body.campground.description;
+  var desc = req.body.publication.description;
   var author = {
       id: req.user._id,
       username: req.user.username
   }
-  geocoder.geocode(req.body.campground.location, function (err, data) {
+  geocoder.geocode(req.body.publication.location, function (err, data) {
     if (err || !data.length) {
       req.flash('error', 'Invalid address');
       return res.redirect('back');
@@ -104,63 +104,63 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     
         // get the uploading image url
     cloudinary.uploader.upload(req.file.path, function(result) {
-        // add cloudinary url for the image to the campground object under image property
-        req.body.campground.image = result.secure_url;
-        req.body.campground.imageId = result.public_id;
-        var image = req.body.campground.image;
-        var imageId = req.body.campground.imageId;
-        var newCampground = {name: name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng};
-        // Create a new campground and save to DB
-        Campground.create(newCampground, function(err, newlyCreated){
+        // add cloudinary url for the image to the publication object under image property
+        req.body.publication.image = result.secure_url;
+        req.body.publication.imageId = result.public_id;
+        var image = req.body.publication.image;
+        var imageId = req.body.publication.imageId;
+        var newPublication = {name: name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng};
+        // Create a new publication and save to DB
+        Publication.create(newPublication, function(err, newlyCreated){
             if(err){
                 console.log(err);
             } else {
-                //redirect back to campgrounds page
+                //redirect back to publications page
                 console.log(newlyCreated);
-                res.redirect("/campgrounds");
+                res.redirect("/publications");
             }
         });
     });
   });
 });
 
-//NEW - show form to create new campground
+//NEW - show form to create new publication
 router.get("/new", middleware.isLoggedIn, function(req, res){
-   res.render("campgrounds/new"); 
+   res.render("publications/new"); 
 });
 
-// SHOW - shows more info about one campground
+// SHOW - shows more info about one publication
 router.get("/:id", function(req, res){
-    //find the campground with provided ID
-    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
-        if(err || !foundCampground){
+    //find the publication with provided ID
+    Publication.findById(req.params.id).populate("comments").exec(function(err, foundPublication){
+        if(err || !foundPublication){
             console.log(err);
-            req.flash("error", "Campground not found");
-            res.redirect("/campgrounds");
+            req.flash("error", "Publication not found");
+            res.redirect("/publications");
         } else {
-            //render show template with that campground
-            res.render("campgrounds/show", {campground: foundCampground});
+            //render show template with that publication
+            res.render("publications/show", {publication: foundPublication});
         }
     });
 });
 
-// EDIT CAMPGROUND ROUTE
-router.get("/:id/edit", middleware.checkCampgroundOwnership, function(req, res){
-    Campground.findById(req.params.id, function(err, foundCampground){
+// EDIT Publication ROUTE
+router.get("/:id/edit", middleware.checkPublicationOwnership, function(req, res){
+    Publication.findById(req.params.id, function(err, foundPublication){
         if(err) {
             console.log(err);
             req.flash("error", err.message);
-            res.redirect("/campgrounds/" + req.params.id);
+            res.redirect("/publications/" + req.params.id);
         }
-        res.render("campgrounds/edit", {campground: foundCampground});
+        res.render("publications/edit", {publication: foundPublication});
     });
 });
 
-// UPDATE CAMPGROUND ROUTE
-router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), function(req, res, next){
+// UPDATE Publication ROUTE
+router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'), function(req, res, next){
     async.waterfall([
         function(done) {
-            geocoder.geocode(req.body.campground.location, function (err, geoData) {
+            geocoder.geocode(req.body.publication.location, function (err, geoData) {
                 if (err || !geoData.length) {
                   req.flash('error', 'Invalid address');
                   return res.redirect('back');
@@ -170,72 +170,72 @@ router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), 
         },
         function(geoData, done) {
             // handle image uploading
-            Campground.findById(req.params.id, function(err, foundCampground) {
+            Publication.findById(req.params.id, function(err, foundPublication) {
                 if(err) {
                      req.flash("error", err.message);
                      return res.redirect("back");
                 }  else {
-                    done(null, foundCampground, geoData);
+                    done(null, foundPublication, geoData);
                 }
             });
         },
-        function(foundCampground, geoData, done) {
+        function(foundPublication, geoData, done) {
             if(req.file) { 
-                cloudinary.v2.uploader.destroy(foundCampground.imageId, function(err, result) {
+                cloudinary.v2.uploader.destroy(foundPublication.imageId, function(err, result) {
                     if(err) {
                         req.flash("error", err.message);
                         return res.redirect("back");
                     } else {
-                        done(null, foundCampground, geoData);
+                        done(null, foundPublication, geoData);
                     }
                 });
             } else {
-                done(null, foundCampground, geoData);
+                done(null, foundPublication, geoData);
             }
         },
-        function(foundCampground, geoData, done) {
+        function(foundPublication, geoData, done) {
             // if new image uploaded, destroy the old one
             if(req.file) { 
                 cloudinary.uploader.upload(req.file.path, function(result) {
-                    req.body.campground.imageId = result.public_id;
-                    req.body.campground.image = result.secure_url;
-                    done(null, foundCampground, geoData);
+                    req.body.publication.imageId = result.public_id;
+                    req.body.publication.image = result.secure_url;
+                    done(null, foundPublication, geoData);
                 });
             } else {
-                done(null, foundCampground, geoData);
+                done(null, foundPublication, geoData);
             }
         },
-        function(foundCampground, geoData) {
+        function(foundPublication, geoData) {
             // update 
-            // var newCampground = {name: req.name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng};
-            req.body.campground.lat = geoData[0].latitude;
-            req.body.campground.lng = geoData[0].longitude;
-            req.body.campground.location = geoData[0].formattedAddress;
-            Campground.findByIdAndUpdate(req.params.id, {$set: req.body.campground}, function(err, campground){
+            // var newPublication = {name: req.name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng};
+            req.body.publication.lat = geoData[0].latitude;
+            req.body.publication.lng = geoData[0].longitude;
+            req.body.publication.location = geoData[0].formattedAddress;
+            Publication.findByIdAndUpdate(req.params.id, {$set: req.body.publication}, function(err, publication){
                 if(err){
                     req.flash("error", err.message);
                     res.redirect("back");
                 } else {
                     req.flash("success","Successfully Updated!");
-                    res.redirect("/campgrounds/" + campground._id);
+                    res.redirect("/publications/" + publication._id);
                 }
             });
         }
     ], function(err) {
         if (err) return next(err);
-        res.redirect('/campgrounds');
+        res.redirect('/publications');
     });
 });
     
 
-// DESTROY CAMPGROUND ROUTE
-router.delete("/:id",middleware.checkCampgroundOwnership, function(req, res){
-   Campground.findByIdAndRemove(req.params.id, function(err){
+// DESTROY publication ROUTE
+router.delete("/:id",middleware.checkPublicationOwnership, function(req, res){
+   Publication.findByIdAndRemove(req.params.id, function(err){
       if(err){
           req.flash("error", err.message);
-          res.redirect("/campgrounds");
+          res.redirect("/publications");
       } else {
-          res.redirect("/campgrounds");
+          res.redirect("/publications");
       }
    });
 });

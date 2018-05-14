@@ -1,5 +1,5 @@
 {
-  "name": "yelpcamp",
+  "name": "resarch_group",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -24,6 +24,7 @@
     "multer": "^1.3.0",
     "node-geocoder": "^3.22.0",
     "nodemailer": "^4.6.4",
+    "nodemon": "^1.17.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^5.0.0",

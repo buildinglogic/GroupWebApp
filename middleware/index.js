@@ -4,18 +4,18 @@
 
 
 var middlewareObj = {};
-var Campground = require("../models/campground");
+var Publication = require("../models/publication");
 var Comment = require("../models/comment");
 
-middlewareObj.checkCampgroundOwnership = function(req, res, next) {
+middlewareObj.checkPublicationOwnership = function(req, res, next) {
     if(req.isAuthenticated()) { // if login or not
-        Campground.findById(req.params.id, function(err, foundCampground) {
-           if(err || !foundCampground) { // if not found, foundCampground is null, which equals false
-               req.flash("error", "Campground not found");
+        Publication.findById(req.params.id, function(err, foundPublication) {
+           if(err || !foundPublication) { // if not found, foundPublication is null, which equals false
+               req.flash("error", "Publication not found");
                res.redirect("back");
            } else {
-               // if user owns this campground; // If the upper condition is true this will break out of the middleware and prevent the code below to crash our application
-               if(foundCampground.author.id.equals(req.user._id) || req.user.isAdmin) {
+               // if user owns this Publication; // If the upper condition is true this will break out of the middleware and prevent the code below to crash our application
+               if(foundPublication.author.id.equals(req.user._id) || req.user.isAdmin) {
                     next();
                } else {
                    req.flash("error", "You don't have the permission");
@@ -36,7 +36,7 @@ middlewareObj.checkCommentOwnership = function(req, res, next) {
                req.flash("error", "Comment not found");
                res.redirect("back"); // not logged in
            } else {
-               // if user owns this campground
+               // if user owns this Publication
                if(foundComment.author.id.equals(req.user._id) || req.user.isAdmin) {
                     next();
                } else {

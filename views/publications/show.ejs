@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-3">
-            <p class="lead">Yelp Camp</p>
+            <p class="lead">Publication</p>
             <div class="list-group">
                 <li class="list-group-item active">List 1</li>
                 <li class="list-group-item">List 2</li>
@@ -14,17 +14,17 @@
         
         <div class="col-md-9">
             <div class="img-thumbnail mb-4">
-                <img class="img-responsive" src="<%= campground.image%>">
+                <img class="img-responsive" src="<%= publication.image%>">
                 <div class="caption-full">
-                    <h4 class="float-right">$<%= campground.price%>/night</h4>
-                    <h4><a href=""><%= campground.name%></a></h4>
-                    <p><%= campground.description%></p>
+                    <h4 class="float-right">$<%= publication.price%>/night</h4>
+                    <h4><a href=""><%= publication.name%></a></h4>
+                    <p><%= publication.description%></p>
                     <p>
-                        <em>Submitted by: <a href="/users/<%= campground.author.id%>"><%= campground.author.username %></a>,  <%= moment(campground.createdAt).fromNow() %></em>
+                        <em>Submitted by: <a href="/users/<%= publication.author.id%>"><%= publication.author.username %></a>,  <%= moment(publication.createdAt).fromNow() %></em>
                     </p>
-                    <% if( (currentUser && campground.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
-                        <a class="btn btn-warning" href="/campgrounds/<%= campground._id%>/edit">Edit</a>
-                        <form class="delete-form" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+                    <% if( (currentUser && publication.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
+                        <a class="btn btn-warning" href="/publications/<%= publication._id%>/edit">Edit</a>
+                        <form class="delete-form" action="/publications/<%=publication._id%>?_method=DELETE" method="POST">
                             <button class="btn btn-danger">Delete</button>
                         </form>
                     <% } %>
@@ -53,7 +53,7 @@
                             <% if(currentUser) { %>
                           <!--If the user is logged in, show the new comment form-->
                           <h4>Write your comment <i class="fas fa-pencil-alt"></i></h4>
-                          <form id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST">
+                          <form id="add-comment-form" action="/publications/<%= publication._id %>/comments" method="POST">
                             <div class="form-group">
                               <input class="form-control" type="text" disabled value="<%= currentUser.username %>">
                             </div>
@@ -70,12 +70,12 @@
                     <!--Collapse Add a comment form END-->
                     
                     <!--Check if there are comments, if there are none say no comments.-->
-                    <% if (campground.comments.length === 0) { %>
+                    <% if (publication.comments.length === 0) { %>
                           <em style="color: grey;">No comments yet.</em>
                     <% } %>
                     
                     <!--Display comments by looping through them-->
-                    <% campground.comments.forEach(function(comment) { %>
+                    <% publication.comments.forEach(function(comment) { %>
                         <div class="row">
                             <div class="col-md-12">
                                 
@@ -93,7 +93,7 @@
                                 <p> <%= comment.text %> </p>
                                 
                                 <% if( (currentUser && comment.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
-                                    <form class="delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id%>?_method=DELETE" method="POST">
+                                    <form class="delete-form" action="/publications/<%= publication._id %>/comments/<%= comment._id%>?_method=DELETE" method="POST">
                                          <input type="submit" class="btn btn-sm btn-danger" value="Delete">   
                                     </form>
                                     
@@ -105,7 +105,7 @@
                                     <div class="collapse" id="collapseEdit<%= comment._id %>">
                                         <div class="well" style="border-left: 5px solid #ffbb33; margin-top: 15px;">
                                             <h4>Edit your comment <i class="fas fa-edit"></i></h4>
-                                            <form id="edit-comment-form<%= comment._id %>" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
+                                            <form id="edit-comment-form<%= comment._id %>" action="/publications/<%= publication._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
                                                 <div class="form-group">
                                                   <input class="form-control" type="text" disabled value="<%= currentUser.username %>">
                                                 </div>
@@ -134,8 +134,8 @@
 <!--include googlemap script-->
 <script>
   function initMap() {
-    var lat = <%= campground.lat %>;
-    var lng = <%= campground.lng %>;
+    var lat = <%= publication.lat %>;
+    var lng = <%= publication.lng %>;
     var center = {lat: lat, lng: lng };
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 8,
@@ -143,9 +143,9 @@
         scrollwheel: false
     });    
     var contentString = `
-      <strong><%= campground.name %><br />
-      <%= campground.location %></strong>
-      <p><%= campground.description %></p>
+      <strong><%= publication.name %><br />
+      <%= publication.location %></strong>
+      <p><%= publication.description %></p>
     `
     var infowindow = new google.maps.InfoWindow({
       content: contentString

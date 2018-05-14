@@ -5,7 +5,7 @@
 var express = require("express");
 var router = express.Router();
 var User = require("../models/user");
-var Campground = require("../models/campground");
+var Publication = require("../models/publication");
 var passport = require("passport");
 var async = require("async");
 var nodemailer = require("nodemailer");
@@ -64,7 +64,7 @@ router.post("/register", function(req, res) {
            }
            passport.authenticate("local")(req, res, function() {
               req.flash("success", "Welcome to YelpCamp " + user.username);
-              res.redirect("/campgrounds"); 
+              res.redirect("/publications"); 
            });
        });
     });
@@ -78,7 +78,7 @@ router.get("/login", function(req, res) {
 // handle login logic
 router.post("/login", passport.authenticate("local", 
     {
-        successRedirect:"/campgrounds",
+        successRedirect:"/publications",
         failureRedirect:"/login",
         failureFlash: true
     }),function(req, res) {
@@ -88,7 +88,7 @@ router.post("/login", passport.authenticate("local",
 router.get("/logout", function(req, res) {
     req.logout();
     req.flash("success", "Successfully logged you out");
-    res.redirect("/campgrounds");
+    res.redirect("/publications");
 });
 
 // forgot route
@@ -220,7 +220,7 @@ router.post('/reset/:token', function(req, res) {
         if(err) {
             req.flash("error", "change password failed");
         } else {
-            res.redirect('/campgrounds');
+            res.redirect('/publications');
         }
     });
 });
@@ -233,12 +233,12 @@ router.get("/users/:id", function(req, res) {
             // eva(require("locus"));
             res.redirect("/");
         }  else {
-            Campground.find().where("author.id").equals(foundUser._id).exec(function(err, campgrounds) {
+            Publication.find().where("author.id").equals(foundUser._id).exec(function(err, publications) {
                 if(err) {
-                    req.flash("error", "Can't find campgrounds of this user");
+                    req.flash("error", "Can't find publications of this user");
                     return res.redirect("back");
                 } else {
-                    res.render(("users/show"), {user:foundUser, campgrounds:campgrounds});
+                    res.render(("users/show"), {user:foundUser, publications:publications});
                 }
             });
         }

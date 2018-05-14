@@ -4,9 +4,9 @@
 <div class="container">
     <div class="row"> 
         <div class="col">
-            <h1 style="text-align:center">Create a new comment to <%= campground.name%> </h1>
+            <h1 style="text-align:center">Create a new comment to <%= publication.name%> </h1>
             <div style="width:30%; margin:25px auto">
-                <form action="/campgrounds/<%= campground._id%>/comments" method="POST">
+                <form action="/publications/<%= publication._id%>/comments" method="POST">
                     <div class="form-group">
                         <input class="form-control" type="text" name = "comment[text]" placeholder="text">
                     </div>
@@ -14,7 +14,7 @@
                         <button class="btn btn-lg btn-secondary btn-block">Submit</button>
                     </div>
                 </form>
-                <a style="text-align:center" href="/campgrounds">Add new campground</a>
+                <a style="text-align:center" href="/publications">Add new publication</a>
             </div>
         </div>
         

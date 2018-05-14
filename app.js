@@ -8,14 +8,14 @@ var flash = require("connect-flash"); // needs to before passport configuration
 var passport = require("passport");
 var localStrategy = require("passport-local");
 var methodOverride = require("method-override");
-var Campground = require("./models/campground");
+var Publication = require("./models/publication");
 var Comment = require("./models/comment");
 var User = require("./models/user");
 var seedDB = require("./seeds");
 var moment = require("moment");
 
 // require routes
-var campgroundRoutes = require("./routes/campgrounds");   
+var publicationRoutes = require("./routes/publications");   
 var commentRoutes = require("./routes/comments");
 var indexRoutes = require("./routes/index");
 var contactRoutes = require("./routes/contact");
@@ -33,7 +33,7 @@ app.locals.moment = moment;
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")( {
-    secret:"once again, rusty is cutest dog",
+    secret:"thi is search group page",
     resave:false,
     saveUninitialized:false
 }));
@@ -52,10 +52,11 @@ app.use(function(req, res, next) {
 });
 
 app.use("/", indexRoutes);
-app.use("/campgrounds", campgroundRoutes); // take each route, and append "/campgrounds at the start"
-app.use("/campgrounds/:id/comments", commentRoutes);
+app.use("/publications", publicationRoutes); // take each route, and append "/publications at the start"
+app.use("/publications/:id/comments", commentRoutes);
 app.use("/contact", contactRoutes);
 
-app.listen(process.env.PORT, process.env.IP, function() {
-   console.log("YelpCamp has started"); 
+
+app.listen(3000, '127.0.0.1', function() {
+   console.log("Resarch Page has started"); 
 });

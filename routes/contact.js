@@ -39,7 +39,7 @@ router.post("/send", function(req, res) {
             from: 'conanlee90@gmail.com',
             to: 'conanlee90@gmail.com',
             replyTo: req.body.email,
-            subject: "Let's Camp contact request from: " + req.body.name,
+            subject: "Research contact request from: " + req.body.name,
             text: 'You have received an email from... Name: '+ req.body.name + ' Phone: ' + req.body.phone + ' Email: ' + req.body.email + ' Message: ' + req.body.message,
             html: '<h3>You have received an email from...</h3><ul><li>Name: ' + req.body.name + ' </li><li>Phone: ' + req.body.phone + ' </li><li>Email: ' + req.body.email + ' </li></ul><p>Message: <br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + req.body.message + ' </p>'
         };
@@ -51,7 +51,7 @@ router.post("/send", function(req, res) {
                 res.redirect("/contact");
             } else {
                 req.flash("success", "Your email has been sent, we will respond within 24 hours.");
-                res.redirect("/campgrounds");
+                res.redirect("/publications");
             }
         });
     });
