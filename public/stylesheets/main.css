@@ -58,5 +58,11 @@ body {
     width:100%;
 }
 
+/*style for publications*/
+.publication-abstract{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width:90%;
+}
 
 /*style for pagination*/

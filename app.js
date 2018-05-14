@@ -8,21 +8,27 @@ var flash = require("connect-flash"); // needs to before passport configuration
 var passport = require("passport");
 var localStrategy = require("passport-local");
 var methodOverride = require("method-override");
+var moment = require("moment");
+
+// REQUIRE MODELS
 var Publication = require("./models/publication");
 var Comment = require("./models/comment");
 var User = require("./models/user");
-var seedDB = require("./seeds");
-var moment = require("moment");
+var Picture = require("./models/picture");
 
-// require routes
+var seedDB = require("./seeds");
+
+
+// REQUIRE ROUTES
 var publicationRoutes = require("./routes/publications");   
 var commentRoutes = require("./routes/comments");
 var indexRoutes = require("./routes/index");
 var contactRoutes = require("./routes/contact");
+var userRoutes = require("./routes/users");
 
-// seedDB(); // seed the database
+// seedDB(); 
+// COONNECT DATABASE
 mongoose.connect(process.env.DATABASEURL);
-// mongoose.connect("mongodb://kangnan:625605657@ds119800.mlab.com:19800/yelpcamp_kangnan");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,7 +49,7 @@ passport.use(new localStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// call this function in evry route
+// SETTING LOCAL VARIABLES
 app.use(function(req, res, next) {
    res.locals.currentUser = req.user; // req.user will empty if no signed up
    res.locals.error = req.flash("error"); // pass this message variable to each route
@@ -51,10 +57,12 @@ app.use(function(req, res, next) {
    next();
 });
 
+// COMBINE ROUTES FILES
 app.use("/", indexRoutes);
 app.use("/publications", publicationRoutes); // take each route, and append "/publications at the start"
 app.use("/publications/:id/comments", commentRoutes);
 app.use("/contact", contactRoutes);
+app.use("/users", userRoutes);
 
 
 app.listen(3000, '127.0.0.1', function() {

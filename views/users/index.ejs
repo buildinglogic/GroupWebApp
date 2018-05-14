@@ -1,0 +1,29 @@
+<% include ../partials/header %>
+
+
+<div class="container">
+    <header class="jumbotron">
+        <div class="container">
+            <h1>This is group members page</h1>
+            <p>all group members comes here</p>
+        </div>
+    </header>
+    
+    <div class="row justify-content-center text-center" id="user-grid">
+        <% users.forEach(function(user){ %>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card bg-info">
+                    <img class="card-img-top" src="<%= user.selfie%>" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= user.firstName user.lastName %></h5>
+                        <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+                        <a href="/uses/<%= user._id%>" class="btn btn-primary">More info</a>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+    
+</div>
+
+<% include ../partials/footer %>

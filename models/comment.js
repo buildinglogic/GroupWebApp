@@ -12,7 +12,11 @@ var commentSchema = new mongoose.Schema({
          ref:"User"
       },
       username:String
-   }
+   },
+   
+   location:String,
+   lat:Number,
+   lng:Number,
 });
 
 module.exports = mongoose.model("Comment", commentSchema);

@@ -2,43 +2,122 @@
 
 
 <div class="container">
+    <div class="py-5 text-center">
+        <img class="d-block mx-auto mb-4" src="" alt="" width="72" height="72">
+        <h2>Sign Up Form</h2>
+        <p class="lead">Here you can sign up a user for this website, which will enable you to add/delete publications, comments, and update your profiles</p>
+  </div>
+
+
     <div class="row"> 
-        <div class="col">
-            <h1 style="text-align:center">Sign Up</h1>
-            <div style="width:30%; margin:25px auto">
-                <form action="/register" method="POST">
-                    <div class="form-group">
-                        <input class="form-control" type="text" name="username" placeholder="username">
+        <div class="col-md-4 order-md-2 mb-4">
+            <p>
+                By sign up here, you agree with Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.
+            </p>
+        </div>
+
+        <div class="col-md-8 order-md-1">
+            <h4 class="mb-3">Fill your information</h4>
+            <form class="needs-validation" action="/register" method="POST" novalidate>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for='username'>Username</label>
+                        <input type="text" class="form-control" id="username" placeholder="username" name="username" required>
+                        <div class="invalid-feedback">
+                            Please have a valid username.
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" type="password" name="password" placeholder="password">
+                    <div class="col-md-6 mb-3">
+                        <label for='password'>Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="password" name="password" required>
+                        <div class="invalid-feedback">
+                            Please have a valid password.
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" type="text" name="firstName" placeholder="firstName">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <label for="prefix">Prefix</label>
+                        <select class="custom-select d-block w-100" id="prefix" name="prefix">
+                            <option value="">Choose...</option>
+                            <option>Dr.</option>
+                            <option>Mr.</option>
+                            <option>Ms.</option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid country.
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" type="text" name="lastName" placeholder="lastName">
+                    <div class="col-md-4 mb-3">
+                            <label for="firstName">First name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="" value="" name="firstName" required>
+                            <div class="invalid-feedback">
+                                Valid first name is required.
+                            </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" type="email" name="email" placeholder="jon@hoe.com">
+                    <div class="col-md-5 mb-3">
+                        <label for="lastName">Last name</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="" value="" name="lastName" required>
+                        <div class="invalid-feedback">
+                          Valid last name is required.
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" type="text" name="avatar" placeholder="avatar url">
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control" type="text" name="adminCode" placeholder="Admin code">
-                    </div>
-                    <div class="form-group">
-                        <!-- Insert the code for the reCaptcha check box -->
-                        <div class="g-recaptcha" data-sitekey="6LcZZVgUAAAAAADy4oaQFWlfx3JWqECE_r7N7LoI"></div>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-lg btn-primary btn-block" href="/register">Sign Up</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="mb-3">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control" id="email" placeholder="you@example.com" name="email" required="">
+                      <div class="invalid-feedback">
+                        Please enter a valid email address for shipping updates.
+                      </div>
+                </div>
+
+                <div class="mb-3">
+                      <label for="adminCode">Administrator Code</label>
+                      <input type="text" class="form-control" id="adminCode" placeholder="" name="adminCode">
+                </div>
+
+                <div class="mb-3">
+                      <label for="selfie">Selfie</label>
+                      <input type="file" class="form-control" id="selfie" name="selfie" accept="image/*">
+                      <div class="invalid-feedback">
+                        Please upload a valid selfie.
+                      </div>
+                </div>
+                
+                <div class="form-group">
+                    <!-- Insert the code for the reCaptcha check box -->
+                    <div class="g-recaptcha" data-sitekey="6LcZZVgUAAAAAADy4oaQFWlfx3JWqECE_r7N7LoI"></div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block" href="/register">Sign Up</button>
+                </div>
+                
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
+</script>
 
 <% include ./partials/footer %>

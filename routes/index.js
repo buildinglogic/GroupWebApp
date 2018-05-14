@@ -46,11 +46,12 @@ router.post("/register", function(req, res) {
         var newUser = new User(
             {
                 username:req.body.username,
+                prefix:req.body.prefix,
                 firstName:req.body.firstName,
                 lastName:req.body.lastName,
-                email:req.body.email,
-                avatar:req.body.avatar,
+                email:req.body.email
             });
+        console.log(newUser);
         // set up amin
         if(req.body.adminCode === process.env.ADMINCODE) {
             newUser.isAdmin = true;

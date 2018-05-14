@@ -2,25 +2,36 @@ var mongoose = require("mongoose");
 
 // schema setup
 var publicationSchema = new mongoose.Schema({
-    name:String,
-    price:String,
+
+    title:String,
     image:String,
     imageId:String,
     description:String,
-    location:String,
-    lat:Number,
-    lng:Number,
+    url:String,
+
+    publicatedDate: {
+        type:Date, 
+        default:Date.now()
+    },
     createdAt: {
         type:Date,
         default:Date.now()
     },
-    author: {
+
+    pulicatedAuthors: [
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }
+    ],
+    createdAuthor: {
         id: {
             type:mongoose.Schema.Types.ObjectId,
             ref:"User"
         },
         username:String
     },
+
     comments:[
         {
             type:mongoose.Schema.Types.ObjectId,
