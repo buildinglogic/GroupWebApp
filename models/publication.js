@@ -4,9 +4,11 @@ var mongoose = require("mongoose");
 var publicationSchema = new mongoose.Schema({
 
     title:String,
+    description:String,
     image:String,
     imageId:String,
-    description:String,
+    
+    citation: String,
     url:String,
 
     publicatedDate: {

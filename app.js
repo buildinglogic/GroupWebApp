@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // hide secret files
 
 var express = require("express");
 var app = express();
@@ -39,7 +39,7 @@ app.locals.moment = moment;
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")( {
-    secret:"thi is search group page",
+    secret:"thi is research group page",
     resave:false,
     saveUninitialized:false
 }));

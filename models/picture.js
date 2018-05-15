@@ -4,8 +4,10 @@ var pictureSchema = new mongoose.Schema({
     
     title:String,
     description:String,
+    image:String,
+    imageId:String,
 
-    author:{
+    createdAuthor:{
       id:{
          type:mongoose.Schema.Types.ObjectId,
          ref:"User"
