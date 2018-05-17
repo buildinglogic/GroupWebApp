@@ -11,6 +11,9 @@
 
 		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
 	</div>
+
+	<div id="map"></div>
+
 	<div class="col-md-8">
 		<h3><%= user.username %>'s publications:</h3>
 		<ul>
@@ -20,5 +23,35 @@
 		</ul>
 	</div>
 </div>
+
+<!--include googlemap script-->
+<script>
+  function initMap() {
+    var lat = <%= publication.lat %>;
+    var lng = <%= publication.lng %>;
+    var center = {lat: lat, lng: lng };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: center,
+        scrollwheel: false
+    });    
+    var contentString = `
+      <strong><%= publication.name %><br />
+      <%= publication.location %></strong>
+      <p><%= publication.description %></p>
+    `
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    var marker = new google.maps.Marker({
+        position: center,
+        map: map
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+  }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzr_Z5i7A_pW5C9uIcYEXRt4T3J18aJ9k&callback=initMap"></script>
 
 <% include ../partials/footer %>

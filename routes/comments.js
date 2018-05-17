@@ -33,8 +33,8 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
                    res.redirect("/publications/" + req.params.id);
                } else {
                    // add username and id to comment
-                   comment.author.id = req.user._id;
-                   comment.author.username = req.user.username;
+                   comment.createdAuthor.id = req.user._id;
+                   comment.createdAuthor.username = req.user.username;
                    // save comment
                    comment.save();
                    publication.comments.push(comment);

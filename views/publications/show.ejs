@@ -5,20 +5,25 @@
         <div class="col-md-3">
             <p class="lead">Publication</p>
             <div class="list-group">
-                <li class="list-group-item active">List 1</li>
-                <li class="list-group-item">List 2</li>
-                <li class="list-group-item">List 3</li>
+                <li class="list-group-item active">Paper Snap</li>
+                <li class="list-group-item">Highlights</li>
+                <li class="list-group-item">Authors</li>
             </div>
-            <div id="map"></div>
         </div>
         
+
+        <!-- DISPLAY PUBLICATION CONTENT -->
         <div class="col-md-9">
-            <div class="img-thumbnail mb-4">
-                <img class="img-responsive" src="<%= publication.image%>">
-                <div class="caption-full">
-                    <h4 class="float-right"><%= publication.publicatedDate.toDateString()%> (Publicated Date)</h4>
-                    <h4><a href="<%= publication.url%>"><%= publication.title%></a></h4>
-                    <p><%= publication.description%></p>
+            <div class="card">
+                <div class="card-body">
+                    <img class="card-img-top mb-5 mt-5" src="<%= publication.image%>" alt="Card image cap">
+                    <h5><a class="card-title"><%= publication.title%></a></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><%= publication.publicatedDate.toDateString()%> (Publicated Date)</h6>
+                    <h6> <a href="<%= publication.url%>"> <%= publication.citation%> </a></h6>
+                    <p class="card-text"><%= publication.description%></p>
+                    <hr>
+                    <a href="#" class="card-link">Highlighted by Synpact</a>
+                    <hr>
                     <p>
                         <em>Submitted by: <a href="/users/<%= publication.createdAuthor.id%>"><%= publication.createdAuthor.username %></a>,  <%= moment(publication.createdAt).fromNow() %></em>
                     </p>
@@ -28,9 +33,11 @@
                             <button class="btn btn-danger">Delete</button>
                         </form>
                     <% } %>
-                </div>
+                  </div>
             </div>
-            
+
+        
+            <!-- ADD NEW COMMENT -->
             <div class="card">
                 <div class="card-body">
                     <!--Setting up the add new comment button that is used for collapsing-->
@@ -69,7 +76,8 @@
                     </div>
                     <!--Collapse Add a comment form END-->
                     
-                    <!--Check if there are comments, if there are none say no comments.-->
+
+                    <!-- DISPLAY COMMENT -->
                     <% if (publication.comments.length === 0) { %>
                           <em style="color: grey;">No comments yet.</em>
                     <% } %>
@@ -79,7 +87,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 
-                                <% if (currentUser && currentUser._id.equals(comment.author.id)) { %>
+                                <% if (currentUser && currentUser._id.equals(comment.createdAuthor.id)) { %>
                                     <!--If the current user owns the comment, change the color of the user icon-->
                                     <i style="color:orange;" class="fas fa-user"></i>
                                 <% } else { %>
@@ -87,12 +95,12 @@
                                     <i class="fas fa-user"></i>
                                 <% } %>
                                 <!--Print out the author username-->
-                                <strong><%= comment.author.username %></strong>
+                                <strong><%= comment.createdAuthor.username %></strong>
                             
                                 <span class="float-right"><%= moment(comment.createdAt).fromNow() %></span>
                                 <p> <%= comment.text %> </p>
                                 
-                                <% if( (currentUser && comment.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
+                                <% if( (currentUser && comment.createdAuthor.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
                                     <form class="delete-form" action="/publications/<%= publication._id %>/comments/<%= comment._id%>?_method=DELETE" method="POST">
                                          <input type="submit" class="btn btn-sm btn-danger" value="Delete">   
                                     </form>
@@ -131,34 +139,6 @@
     </div>
 </div>
 
-<!--include googlemap script-->
-<script>
-  function initMap() {
-    var lat = <%= publication.lat %>;
-    var lng = <%= publication.lng %>;
-    var center = {lat: lat, lng: lng };
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 8,
-        center: center,
-        scrollwheel: false
-    });    
-    var contentString = `
-      <strong><%= publication.name %><br />
-      <%= publication.location %></strong>
-      <p><%= publication.description %></p>
-    `
-    var infowindow = new google.maps.InfoWindow({
-      content: contentString
-    });
-    var marker = new google.maps.Marker({
-        position: center,
-        map: map
-    });
-    marker.addListener('click', function() {
-      infowindow.open(map, marker);
-    });
-  }
-</script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzr_Z5i7A_pW5C9uIcYEXRt4T3J18aJ9k&callback=initMap"></script>
+
 
 <% include ../partials/footer %>

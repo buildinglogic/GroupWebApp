@@ -172,7 +172,7 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
             });
         },
         function(foundPublication, done) {
-            if(req.file) { 
+            if(req.file && foundPublication.imageId) { 
                 cloudinary.v2.uploader.destroy(foundPublication.imageId, function(err, result) {
                     if(err) {
                         req.flash("error", err.message);
@@ -199,11 +199,20 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
         },
         function(foundPublication) {
             // update 
+            var image;
+            var imageId;
+            if(!req.file) {
+              image = foundPublication.image;
+              imageId = foundPublication.imageId;
+            } else {
+              image = req.body.publication.image;
+              imageId = req.body.publication.imageId;
+            }
             var publicatedDate = new Date(req.body.publication.publicatedDate);
             var newPublication = {title: req.body.publication.title, 
                                   description: req.body.publication.description,
-                                  image: req.body.publication.image,
-                                  imageId: req.body.publication.imageId,
+                                  image: image,
+                                  imageId: imageId,
                                   citation:req.body.publication.citation,
                                   url: req.body.publication.url,
                                   publicatedDate: publicatedDate,
