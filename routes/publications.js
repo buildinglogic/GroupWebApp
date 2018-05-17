@@ -7,7 +7,8 @@ var multer = require('multer');
 var cloudinary = require('cloudinary');
 var async = require("async");
 
- // set up google map options
+
+ // GOOGLE MAP API SETTING
 var options = {
   provider: 'google',
   httpAdapter: 'https',
@@ -16,7 +17,8 @@ var options = {
 };
 var geocoder = NodeGeocoder(options);
 
-// set up image uploading with multer and cloudinary
+
+// IMAGE UPLOADING : MULTER AND CLOUDINARY 
 var storage = multer.diskStorage({
   filename: function(req, file, callback) {
     callback(null, Date.now() + file.originalname);
@@ -38,7 +40,7 @@ cloudinary.config({
 });
 
 
-//INDEX - show all publications
+//INDEX - SHOW ALL PUBLICATIONS
 router.get("/", function(req, res){
     var perPage = 8;
     var pageQuery = parseInt(req.query.page);
@@ -46,7 +48,7 @@ router.get("/", function(req, res){
 
     if (req.query.search) {
        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-       Publication.find({ "name": regex }).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
+       Publication.find({ "title": regex }).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
            Publication.count().exec(function(err, count) {
                if(err) {
                    console.log(err);
@@ -82,55 +84,51 @@ router.get("/", function(req, res){
     }
 });
 
-//CREATE - add new publication to DB
+
+//CREATE - ADD NEW PUBLICATION TO DB
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
   // get data from form and add to publications array
-  var name = req.body.publication.name;
-  var price = req.body.publication.price;
-//   var image = req.body.image;
+  console.log(req);
+  var title = req.body.publication.title;
   var desc = req.body.publication.description;
-  var author = {
+  var citation = req.body.publication.citation;
+  var url = req.body.publication.url;
+  var publicatedDate = new Date(req.body.publication.publicatedDate);
+  //   var image = req.body.image;
+  
+  var createdAuthor = {
       id: req.user._id,
       username: req.user.username
   }
-  geocoder.geocode(req.body.publication.location, function (err, data) {
-    if (err || !data.length) {
-      req.flash('error', 'Invalid address');
-      return res.redirect('back');
-    }
-    var lat = data[0].latitude;
-    var lng = data[0].longitude;
-    var location = data[0].formattedAddress;
-    
-        // get the uploading image url
-    cloudinary.uploader.upload(req.file.path, function(result) {
-        // add cloudinary url for the image to the publication object under image property
-        req.body.publication.image = result.secure_url;
-        req.body.publication.imageId = result.public_id;
-        var image = req.body.publication.image;
-        var imageId = req.body.publication.imageId;
-        var url = req.body.publication.url;
-        var newPublication = {name: name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng, url: url};
-        // Create a new publication and save to DB
-        Publication.create(newPublication, function(err, newlyCreated){
-            if(err){
-                console.log(err);
-            } else {
-                //redirect back to publications page
-                console.log(newlyCreated);
-                res.redirect("/publications");
-            }
-        });
+
+  // get the uploading image url
+  cloudinary.uploader.upload(req.file.path, function(result) {
+    // add cloudinary url for the image to the publication object under image property
+    var image  = result.secure_url;
+    var imageId = result.public_id;
+    var newPublication = {title: title, description: desc, image: image, imageId: imageId, 
+      citation: citation, url: url, publicatedDate: publicatedDate, createdAuthor:createdAuthor};
+    // Create a new publication and save to DB
+    Publication.create(newPublication, function(err, newlyCreated){
+        if(err){
+            console.log(err);
+        } else {
+            //redirect back to publications page
+            console.log(newlyCreated);
+            res.redirect("/publications");
+        }
     });
   });
 });
 
-//NEW - show form to create new publication
+
+//NEW - RENDER NEW FORM FOR CREATE A NEW PUBLICATION
 router.get("/new", middleware.isLoggedIn, function(req, res){
    res.render("publications/new"); 
 });
 
-// SHOW - shows more info about one publication
+
+// SHOW - DISPLAY INFO OF ONE PUBLICATION
 router.get("/:id", function(req, res){
     //find the publication with provided ID
     Publication.findById(req.params.id).populate("comments").exec(function(err, foundPublication){
@@ -145,7 +143,8 @@ router.get("/:id", function(req, res){
     });
 });
 
-// EDIT Publication ROUTE
+
+// EDIT - EDIT A PUBLICATION
 router.get("/:id/edit", middleware.checkPublicationOwnership, function(req, res){
     Publication.findById(req.params.id, function(err, foundPublication){
         if(err) {
@@ -157,62 +156,60 @@ router.get("/:id/edit", middleware.checkPublicationOwnership, function(req, res)
     });
 });
 
+
 // UPDATE Publication ROUTE
 router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'), function(req, res, next){
     async.waterfall([
         function(done) {
-            geocoder.geocode(req.body.publication.location, function (err, geoData) {
-                if (err || !geoData.length) {
-                  req.flash('error', 'Invalid address');
-                  return res.redirect('back');
-                }
-                done(null, geoData);
-            });
-        },
-        function(geoData, done) {
             // handle image uploading
             Publication.findById(req.params.id, function(err, foundPublication) {
                 if(err) {
                      req.flash("error", err.message);
                      return res.redirect("back");
                 }  else {
-                    done(null, foundPublication, geoData);
+                    done(null, foundPublication);
                 }
             });
         },
-        function(foundPublication, geoData, done) {
+        function(foundPublication, done) {
             if(req.file) { 
                 cloudinary.v2.uploader.destroy(foundPublication.imageId, function(err, result) {
                     if(err) {
                         req.flash("error", err.message);
                         return res.redirect("back");
                     } else {
-                        done(null, foundPublication, geoData);
+                        done(null, foundPublication);
                     }
                 });
             } else {
-                done(null, foundPublication, geoData);
+                done(null, foundPublication);
             }
         },
-        function(foundPublication, geoData, done) {
+        function(foundPublication, done) {
             // if new image uploaded, destroy the old one
             if(req.file) { 
                 cloudinary.uploader.upload(req.file.path, function(result) {
                     req.body.publication.imageId = result.public_id;
                     req.body.publication.image = result.secure_url;
-                    done(null, foundPublication, geoData);
+                    done(null, foundPublication);
                 });
             } else {
-                done(null, foundPublication, geoData);
+                done(null, foundPublication);
             }
         },
-        function(foundPublication, geoData) {
+        function(foundPublication) {
             // update 
-            // var newPublication = {name: req.name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng};
-            req.body.publication.lat = geoData[0].latitude;
-            req.body.publication.lng = geoData[0].longitude;
-            req.body.publication.location = geoData[0].formattedAddress;
-            Publication.findByIdAndUpdate(req.params.id, {$set: req.body.publication}, function(err, publication){
+            var publicatedDate = new Date(req.body.publication.publicatedDate);
+            var newPublication = {title: req.body.publication.title, 
+                                  description: req.body.publication.description,
+                                  image: req.body.publication.image,
+                                  imageId: req.body.publication.imageId,
+                                  citation:req.body.publication.citation,
+                                  url: req.body.publication.url,
+                                  publicatedDate: publicatedDate,
+                                  publicatedAuthors: req.body.publication.publicatedAuthors};
+            console.log(newPublication);
+            Publication.findByIdAndUpdate(req.params.id, {$set: newPublication}, function(err, publication){
                 if(err){
                     req.flash("error", err.message);
                     res.redirect("back");

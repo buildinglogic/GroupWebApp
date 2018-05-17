@@ -15,7 +15,7 @@ middlewareObj.checkPublicationOwnership = function(req, res, next) {
                res.redirect("back");
            } else {
                // if user owns this Publication; // If the upper condition is true this will break out of the middleware and prevent the code below to crash our application
-               if(foundPublication.author.id.equals(req.user._id) || req.user.isAdmin) {
+               if(foundPublication.createdAuthor.id.equals(req.user._id) || req.user.isAdmin) {
                     next();
                } else {
                    req.flash("error", "You don't have the permission");
@@ -37,7 +37,7 @@ middlewareObj.checkCommentOwnership = function(req, res, next) {
                res.redirect("back"); // not logged in
            } else {
                // if user owns this Publication
-               if(foundComment.author.id.equals(req.user._id) || req.user.isAdmin) {
+               if(foundComment.createdAuthor.id.equals(req.user._id) || req.user.isAdmin) {
                     next();
                } else {
                    req.flash("error", "You don't have the permission");

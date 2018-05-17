@@ -16,13 +16,13 @@
             <div class="img-thumbnail mb-4">
                 <img class="img-responsive" src="<%= publication.image%>">
                 <div class="caption-full">
-                    <h4 class="float-right"><%= publication.price%> (Publication Year)</h4>
-                    <h4><a href="<%= publication.url%>"><%= publication.name%></a></h4>
+                    <h4 class="float-right"><%= publication.publicatedDate.toDateString()%> (Publicated Date)</h4>
+                    <h4><a href="<%= publication.url%>"><%= publication.title%></a></h4>
                     <p><%= publication.description%></p>
                     <p>
-                        <em>Submitted by: <a href="/users/<%= publication.author.id%>"><%= publication.author.username %></a>,  <%= moment(publication.createdAt).fromNow() %></em>
+                        <em>Submitted by: <a href="/users/<%= publication.createdAuthor.id%>"><%= publication.createdAuthor.username %></a>,  <%= moment(publication.createdAt).fromNow() %></em>
                     </p>
-                    <% if( (currentUser && publication.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
+                    <% if( (currentUser && publication.createdAuthor.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin) ) { %>
                         <a class="btn btn-warning" href="/publications/<%= publication._id%>/edit">Edit</a>
                         <form class="delete-form" action="/publications/<%=publication._id%>?_method=DELETE" method="POST">
                             <button class="btn btn-danger">Delete</button>
