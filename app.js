@@ -15,6 +15,7 @@ var Publication = require("./models/publication");
 var Comment = require("./models/comment");
 var User = require("./models/user");
 var Picture = require("./models/picture");
+var Blog = require("./models/blog");
 
 var seedDB = require("./seeds");
 
@@ -25,6 +26,7 @@ var commentRoutes = require("./routes/comments");
 var indexRoutes = require("./routes/index");
 var contactRoutes = require("./routes/contact");
 var userRoutes = require("./routes/users");
+var blogRoutes = require("./routes/blogs");
 
 // seedDB(); 
 // COONNECT DATABASE
@@ -63,6 +65,7 @@ app.use("/publications", publicationRoutes); // take each route, and append "/pu
 app.use("/publications/:id/comments", commentRoutes);
 app.use("/contact", contactRoutes);
 app.use("/users", userRoutes);
+app.use("/blogs", blogRoutes);
 
 
 app.listen(3000, '127.0.0.1', function() {
