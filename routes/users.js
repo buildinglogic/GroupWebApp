@@ -1,12 +1,21 @@
 var express = require("express");
 var router  = express.Router();
+var User = require("../models/user");
 var Publication = require("../models/publication");
 var middleware = require("../middleware");
+
+var passport = require("passport");
+var nodemailer = require("nodemailer");
+var crypto = require("crypto");
+var request = require("request");
+
 var NodeGeocoder = require('node-geocoder');
 var multer = require('multer');
 var cloudinary = require('cloudinary');
 var async = require("async");
 
+
+ 
  // set up google map options
 var options = {
   provider: 'google',
@@ -38,49 +47,12 @@ cloudinary.config({
 });
 
 
-//INDEX - show all publications
-router.get("/", function(req, res){
-    var perPage = 8;
-    var pageQuery = parseInt(req.query.page);
-    var pageNumber = pageQuery ? pageQuery : 1;
-
-    if (req.query.search) {
-       const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-       Publication.find({ "name": regex }).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
-           Publication.count().exec(function(err, count) {
-               if(err) {
-                   console.log(err);
-               } else {
-                   var error;
-                   if(foundPublications.length < 1) {
-                       error = "no matched results found";
-                   }
-                  res.render("publications/index", { 
-                      publications: foundPublications, 
-                      error:error, 
-                      current:pageNumber,
-                      pages:Math.ceil(count / perPage)
-                  });
-               }
-           });
-       }); 
-    } else {
-        // Get all publications from DB
-        Publication.find({}).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
-           Publication.count().exec(function(err, count) {
-               if(err){
-                   console.log(err);
-               } else {
-                   res.render("publications/index", { 
-                      publications: foundPublications, 
-                      current:pageNumber,
-                      pages:Math.ceil(count / perPage)
-                  });
-               }
-           });
-        });
-    }
+// REGISTER ROUTE
+router.get("/register", function(req, res) {
+   res.render("users/register", {page:"register"}); 
 });
+
+
 
 //CREATE - add new publication to DB
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
@@ -124,6 +96,128 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     });
   });
 });
+
+
+   
+// NEW - REGISTER
+router.post("/register", upload.single('image'), function(req, res) {
+    const captcha = req.body["g-recaptcha-response"];
+    if (!captcha) {
+      console.log(req.body);
+      req.flash("error", "Please select captcha");
+      return res.redirect("/register");
+    }
+    // secret key
+    var secretKey = process.env.CAPTCHA;
+    // Verify URL
+    var verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}&remoteip=${req
+      .connection.remoteAddress}`;
+    // Make request to Verify URL
+    request.get(verifyURL, (err, response, body) => {
+        // if not successful
+        if (body.success !== undefined && !body.success) {
+            req.flash("error", "Captcha Failed");
+            return res.redirect("/contact");
+        }
+
+        geocoder.geocode(req.body.location, function (err, data) {
+          if (err || !data.length) {
+            req.flash('error', 'Invalid address');
+            return res.redirect('back');
+          }
+          var lat = data[0].latitude;
+          var lng = data[0].longitude;
+          var location = data[0].formattedAddress;
+
+          // get the uploading image url
+          cloudinary.uploader.upload(req.file.path, function(result) {
+              // add cloudinary url for the image to the publication object under image property
+              req.body.selfie = result.secure_url;
+              req.body.selfieId = result.public_id;
+              var selfie = req.body.selfie;
+              var selfieId = req.body.selfieId;
+
+              var joinYear = new Date(req.body.joinYear);
+              var graduateYear = new Date(req.body.graduateYear);
+              var newUser = new User(
+                  {
+                      username:req.body.username,
+                      prefix:req.body.prefix,
+                      firstName:req.body.firstName,
+                      lastName:req.body.lastName,
+                      email:req.body.email,
+                      joinYear:joinYear,
+                      graduateYear:graduateYear 
+                  });
+              console.log(newUser);
+              // set up amin
+              if(req.body.adminCode === process.env.ADMINCODE) {
+                  newUser.isAdmin = true;
+              }
+
+             User.register(newUser, req.body.password, function(err, user) { // provide by passport-local-mongoose
+                 if(err) {
+                     req.flash("error", err.message);
+                     res.redirect("/register");
+                  //   return res.render("register", {"error": err.message});
+                 }
+                 passport.authenticate("local")(req, res, function() {
+                    req.flash("success", "Welcome to YelpCamp " + user.username);
+                    res.redirect("/publications"); 
+                 });
+             });
+          });
+        });
+    });
+});
+  
+// show login form
+router.get("/login", function(req, res) {
+    res.render("users/login", {page:"login"});
+});
+
+// handle login logic
+router.post("/login", passport.authenticate("local", 
+    {
+        successRedirect:"/publications",
+        failureRedirect:"/users/login",
+        failureFlash: true
+    }),function(req, res) {
+});
+
+// logout route
+router.get("/logout", function(req, res) {
+    req.logout();
+    req.flash("success", "Successfully logged you out");
+    res.redirect("/publications");
+});
+
+
+// user profile
+router.get("/:id", function(req, res) {
+   User.findById(req.params.id, function(err, foundUser) {
+        if(err || !foundUser) {
+            req.flash("error", "User not found");
+            // eva(require("locus"));
+            res.redirect("/");
+        }  else {
+            Publication.find().where("author.id").equals(foundUser._id).exec(function(err, publications) {
+                if(err) {
+                    req.flash("error", "Can't find publications of this user");
+                    return res.redirect("back");
+                } else {
+                    res.render(("users/show"), {user:foundUser, publications:publications});
+                }
+            });
+        }
+   });
+});
+
+ 
+
+
+
+
 
 //NEW - show form to create new publication
 router.get("/new", middleware.isLoggedIn, function(req, res){

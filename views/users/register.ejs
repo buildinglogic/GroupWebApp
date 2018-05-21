@@ -1,4 +1,4 @@
-<% include ./partials/header %>
+<% include ../partials/header %>
 
 
 <div class="container">
@@ -15,10 +15,10 @@
                 By sign up here, you agree with Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.
             </p>
         </div>
-
+ 
         <div class="col-md-8 order-md-1">
             <h4 class="mb-3">Fill your information</h4>
-            <form class="needs-validation" action="/register" method="POST" novalidate>
+            <form class="needs-validation" action="/users/register" method="POST" enctype="multipart/form-data" novalidate>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for='username'>Username</label>
@@ -34,6 +34,29 @@
                             Please have a valid password.
                         </div>
                     </div>
+                </div> 
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for='joinYear'>Join Date</label>
+                        <input type="text" class="form-control" id="joinYear" placeholder="YYYY-mm-dd" name="joinYear" required>
+                        <div class="invalid-feedback">
+                            Please have a valid input date as "YYYY-mm-dd".
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for='graduateYear'>Targeted Graduation Date</label>
+                        <input type="text" class="form-control" id="graduateYear" placeholder="YYYY-mm-dd" name="graduateYear" required>
+                        <div class="invalid-feedback">
+                            Please have a valid input date as "YYYY-mm-dd".
+                        </div>
+                    </div>
+                </div> 
+                 <div class="mb-3">
+                      <label for="hometown">Hometown Location</label>
+                      <input type="text" class="form-control" id="hometown" placeholder="Durham, North Carolina, USA" name="location">
+                      <div class="invalid-feedback">
+                        Please enter a valid email address.
+                      </div>
                 </div>
 
                 <div class="row">
@@ -44,7 +67,7 @@
                             <option>Dr.</option>
                             <option>Mr.</option>
                             <option>Ms.</option>
-                        </select>
+                        </select> 
                         <div class="invalid-feedback">
                           Please select a valid country.
                         </div>
@@ -120,4 +143,4 @@
     })();
 </script>
 
-<% include ./partials/footer %>
+<% include ../partials/footer %>

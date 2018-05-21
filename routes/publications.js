@@ -83,7 +83,7 @@ router.get("/", function(req, res){
         });
     }
 });
-
+ 
 
 //CREATE - ADD NEW PUBLICATION TO DB
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){

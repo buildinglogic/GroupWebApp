@@ -1,96 +1,28 @@
 // ========================
 // AUTH ROUTE
 // ========================
-
+ 
 var express = require("express");
 var router = express.Router();
 var User = require("../models/user");
 var Publication = require("../models/publication");
+var middleware = require("../middleware");
 var passport = require("passport");
-var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
 var request = require("request");
+var NodeGeocoder = require('node-geocoder');
+var multer = require('multer');
+var cloudinary = require('cloudinary');
+var async = require("async");
 
-// root route
+
+
+// ROOT ROUTE
 router.get("/", function(req, res) {
     res.render("landing", {page:"landing"}); 
 });
 
-// register route
-router.get("/register", function(req, res) {
-   res.render("register", {page:"register"}); 
-});
-
-// handle register logic
-router.post("/register", function(req, res) {
-    const captcha = req.body["g-recaptcha-response"];
-    if (!captcha) {
-      console.log(req.body);
-      req.flash("error", "Please select captcha");
-      return res.redirect("/register");
-    }
-    // secret key
-    var secretKey = process.env.CAPTCHA;
-    // Verify URL
-    var verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}&remoteip=${req
-      .connection.remoteAddress}`;
-    // Make request to Verify URL
-    request.get(verifyURL, (err, response, body) => {
-        // if not successful
-        if (body.success !== undefined && !body.success) {
-            req.flash("error", "Captcha Failed");
-            return res.redirect("/contact");
-        }
-    
-        var newUser = new User(
-            {
-                username:req.body.username,
-                prefix:req.body.prefix,
-                firstName:req.body.firstName,
-                lastName:req.body.lastName,
-                email:req.body.email
-            });
-        console.log(newUser);
-        // set up amin
-        if(req.body.adminCode === process.env.ADMINCODE) {
-            newUser.isAdmin = true;
-        }
-
-       User.register(newUser, req.body.password, function(err, user) { // provide by passport-local-mongoose
-           if(err) {
-               req.flash("error", err.message);
-               res.redirect("/register");
-            //   return res.render("register", {"error": err.message});
-           }
-           passport.authenticate("local")(req, res, function() {
-              req.flash("success", "Welcome to YelpCamp " + user.username);
-              res.redirect("/publications"); 
-           });
-       });
-    });
-});
-
-// show login form
-router.get("/login", function(req, res) {
-    res.render("login", {page:"login"});
-});
-
-// handle login logic
-router.post("/login", passport.authenticate("local", 
-    {
-        successRedirect:"/publications",
-        failureRedirect:"/login",
-        failureFlash: true
-    }),function(req, res) {
-});
-
-// logout route
-router.get("/logout", function(req, res) {
-    req.logout();
-    req.flash("success", "Successfully logged you out");
-    res.redirect("/publications");
-});
 
 // forgot route
 router.get("/forgot", function(req, res) {
@@ -149,7 +81,7 @@ router.post('/forgot', function(req, res, next) {
     res.redirect('/forgot');
   });
 });
-
+ 
 // reset route
 router.get('/reset/:token', function(req, res) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpire: { $gt: Date.now() } }, function(err, user) {
@@ -226,24 +158,5 @@ router.post('/reset/:token', function(req, res) {
     });
 });
 
-// user profile
-router.get("/users/:id", function(req, res) {
-   User.findById(req.params.id, function(err, foundUser) {
-        if(err || !foundUser) {
-            req.flash("error", "User not found");
-            // eva(require("locus"));
-            res.redirect("/");
-        }  else {
-            Publication.find().where("author.id").equals(foundUser._id).exec(function(err, publications) {
-                if(err) {
-                    req.flash("error", "Can't find publications of this user");
-                    return res.redirect("back");
-                } else {
-                    res.render(("users/show"), {user:foundUser, publications:publications});
-                }
-            });
-        }
-   });
-});
 
 module.exports = router;
