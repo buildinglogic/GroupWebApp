@@ -52,52 +52,6 @@ router.get("/register", function(req, res) {
    res.render("users/register", {page:"register"}); 
 });
 
-
-
-//CREATE - add new publication to DB
-router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
-  // get data from form and add to publications array
-  var name = req.body.publication.name;
-  var price = req.body.publication.price;
-//   var image = req.body.image;
-  var desc = req.body.publication.description;
-  var author = {
-      id: req.user._id,
-      username: req.user.username
-  }
-  geocoder.geocode(req.body.publication.location, function (err, data) {
-    if (err || !data.length) {
-      req.flash('error', 'Invalid address');
-      return res.redirect('back');
-    }
-    var lat = data[0].latitude;
-    var lng = data[0].longitude;
-    var location = data[0].formattedAddress;
-    
-        // get the uploading image url
-    cloudinary.uploader.upload(req.file.path, function(result) {
-        // add cloudinary url for the image to the publication object under image property
-        req.body.publication.image = result.secure_url;
-        req.body.publication.imageId = result.public_id;
-        var image = req.body.publication.image;
-        var imageId = req.body.publication.imageId;
-        var url = req.body.publication.url;
-        var newPublication = {name: name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng, url: url};
-        // Create a new publication and save to DB
-        Publication.create(newPublication, function(err, newlyCreated){
-            if(err){
-                console.log(err);
-            } else {
-                //redirect back to publications page
-                console.log(newlyCreated);
-                res.redirect("/publications");
-            }
-        });
-    });
-  });
-});
-
-
    
 // NEW - REGISTER
 router.post("/register", upload.single('image'), function(req, res) {
@@ -132,10 +86,8 @@ router.post("/register", upload.single('image'), function(req, res) {
           // get the uploading image url
           cloudinary.uploader.upload(req.file.path, function(result) {
               // add cloudinary url for the image to the publication object under image property
-              req.body.selfie = result.secure_url;
-              req.body.selfieId = result.public_id;
-              var selfie = req.body.selfie;
-              var selfieId = req.body.selfieId;
+              var selfie = result.secure_url;
+              var selfieId = result.public_id;
 
               var joinYear = new Date(req.body.joinYear);
               var graduateYear = new Date(req.body.graduateYear);
@@ -147,7 +99,12 @@ router.post("/register", upload.single('image'), function(req, res) {
                       lastName:req.body.lastName,
                       email:req.body.email,
                       joinYear:joinYear,
-                      graduateYear:graduateYear 
+                      graduateYear:graduateYear ,
+                      selfie:selfie,
+                      selfieId:selfieId,
+                      lat:lat,
+                      lng:lng,
+                      location:location
                   });
               console.log(newUser);
               // set up amin
@@ -170,7 +127,7 @@ router.post("/register", upload.single('image'), function(req, res) {
         });
     });
 });
-  
+   
 // show login form
 router.get("/login", function(req, res) {
     res.render("users/login", {page:"login"});
@@ -201,7 +158,7 @@ router.get("/:id", function(req, res) {
             // eva(require("locus"));
             res.redirect("/");
         }  else {
-            Publication.find().where("author.id").equals(foundUser._id).exec(function(err, publications) {
+            Publication.find().where("createdAuthor.id").equals(foundUser._id).exec(function(err, publications) {
                 if(err) {
                     req.flash("error", "Can't find publications of this user");
                     return res.redirect("back");
@@ -216,13 +173,6 @@ router.get("/:id", function(req, res) {
  
 
 
-
-
-
-//NEW - show form to create new publication
-router.get("/new", middleware.isLoggedIn, function(req, res){
-   res.render("publications/new"); 
-});
 
 // SHOW - shows more info about one publication
 router.get("/:id", function(req, res){

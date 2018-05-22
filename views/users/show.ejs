@@ -1,34 +1,58 @@
 <% include ../partials/header %>
 
-<div class="row">
-	<div class="col-md-4">
-			<h1><%= user.firstName + " " + user.lastName %></h1>
-		<div class="thumbnail">
-			<img src="<%= user.avatar %>" alt="user profile image">
-			<div class="caption"><a href="mailto:<%= user.email %>"><%= user.email %></a></div>
-		</div>
-		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
+<div class="container">
 
-		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
-	</div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <img class="card-img-top" src="<%= user.selfie %>" alt="user profile image">
+        <div class="card-body">
+          <h5 class="card-title"><%= user.firstName + " " + user.lastName %></h5>
+          <a class="btn btn-primary" href="mailto:<%= user.email %>"><%= user.email %></a>
+          <p class="card-text">
+            Some quick example text to build on the card title and make up the bulk of the  card's content.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
 
-	<div id="map"></div>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
+          </p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
+    </div>
 
-	<div class="col-md-8">
-		<h3><%= user.username %>'s publications:</h3>
-		<ul>
-		<% publications.forEach(function(publication) { %>
-			<li><a href="/publications/<%= publication.id %>"><%= publication.name %></a></li>
-		<% }); %>
-		</ul>
-	</div>
+  	<div class="col-sm-6">
+  		<h3><%= user.username %>'s publications:</h3>
+  		<ul>
+  		<% publications.forEach(function(publication) { %>
+  			<li><a href="/publications/<%= publication.id %>"><%= publication.name %></a></li>
+  		<% }); %>
+  		</ul>
+  	</div>
+  </div>
+  
+  
+  <div class="card text-center">
+    <div class="card-header">
+      Howntown Google Location
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Where I come from</h5>
+      <p class="card-text">this is the place I come from, xxxxxxxx.</p>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="card-footer text-muted">
+      added by Kangnan
+    </div>
+  </div>
+  
 </div>
-
+ 
 <!--include googlemap script-->
 <script>
   function initMap() {
-    var lat = <%= publication.lat %>;
-    var lng = <%= publication.lng %>;
+    var lat = <%= user.lat %>;
+    var lng = <%= user.lng %>;
     var center = {lat: lat, lng: lng };
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 8,
@@ -36,9 +60,9 @@
         scrollwheel: false
     });    
     var contentString = `
-      <strong><%= publication.name %><br />
-      <%= publication.location %></strong>
-      <p><%= publication.description %></p>
+      <strong><%= user.firstName%> <%= user.lastName %><br />
+      <%= user.location %></strong>
+      <p><%= user.description %></p>
     `
     var infowindow = new google.maps.InfoWindow({
       content: contentString
