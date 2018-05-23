@@ -12,6 +12,10 @@
             <form action="/publications" method="POST" enctype="multipart/form-data">
             <!--<form action="/publications" method="POST">-->
                 <div class="form-group">
+                    <label for="seriesNumber">Number # Publication</label>
+                    <input class="form-control" id="seriesNumber" type="number" name = "publication[seriesNumber]" placeholder="">
+                </div>
+                <div class="form-group">
                     <label for="title">Title</label>
                     <input class="form-control" id="title" type="text" name = "publication[title]" placeholder="publication title">
                 </div>

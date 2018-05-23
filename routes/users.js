@@ -150,6 +150,27 @@ router.get("/logout", function(req, res) {
 });
 
 
+// INDEX - SHOW ALL USERS
+router.get("/", function(req, res) {
+  User.find({ joinYear: { $lt: Date.now() }, graduateYear: { $gt: Date.now() }}, function(err, currentGroupMembers) {
+    // error handle find for current members
+    if(err){
+      console.log(err);
+    } else {
+      User.find({graduateYear: { $lt: Date.now() }}, function(err, formerGroupMembers) {
+        if(err) {
+          console.log(err);
+        } else {
+          // error handle for find former group members
+          res.render("users/index", {currentGroupMembers : currentGroupMembers, formerGroupMembers: formerGroupMembers});
+        }   
+      });
+    }
+  });
+});
+
+ 
+
 // user profile
 router.get("/:id", function(req, res) {
    User.findById(req.params.id, function(err, foundUser) {
@@ -171,6 +192,49 @@ router.get("/:id", function(req, res) {
 });
 
  
+ // BIO ROUTE
+router.get("/:id/biography/new", middleware.isLoggedIn, function(req, res) {
+  User.findById(req.params.id, function(err, user) {
+    if(err || !user) {
+      req.flash("error", "user not found");
+      res.redirect("back");
+    } else {
+      res.render("biography/new", {user: user});
+    }
+  });
+});
+
+
+
+// CREATE - comments 
+router.post("/", middleware.isLoggedIn, function(req, res) {
+    Publication.findById(req.params.id, function(err, publication) {
+        if(err || !publication) {
+            req.flash("error", "publication not found");
+            res.redirect("/publications");
+        } else {
+            Comment.create(req.body.comment, function(err, comment) {
+               if(err) {
+                   req.flash("error", "Creation failed");
+                   res.redirect("/publications/" + req.params.id);
+               } else {
+                   // add username and id to comment
+                   comment.createdAuthor.id = req.user._id;
+                   comment.createdAuthor.username = req.user.username;
+                   // save comment
+                   comment.save();
+                   publication.comments.push(comment);
+                   publication.save();
+                   req.flash("success", "Successfully created a publication");
+                   res.redirect("/publications/" + publication._id);
+               }
+            });
+        }
+    });
+});
+ 
+
+
 
 
 

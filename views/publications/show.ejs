@@ -1,7 +1,13 @@
 <% include ../partials/header %>
 
 <div class="container">
+
     <div class="row">
+
+        <!--  *****************  -->
+        <!-- OPTIONS DISPLAY -->
+        <!--  *****************  -->
+
         <div class="col-md-3">
             <p class="lead">Publication</p>
             <div class="list-group">
@@ -12,8 +18,12 @@
         </div>
         
 
-        <!-- DISPLAY PUBLICATION CONTENT -->
         <div class="col-md-9">
+
+            <!--  *****************  -->
+            <!-- PUBLICATION DISPLAY -->
+            <!--  *****************  -->
+
             <div class="card">
                 <div class="card-body">
                     <img class="card-img-top mb-5 mt-5" src="<%= publication.image%>" alt="Card image cap">
@@ -21,8 +31,6 @@
                     <h6 class="card-subtitle mb-2 text-muted"><%= publication.publicatedDate.toDateString()%> (Publicated Date)</h6>
                     <h6> <a href="<%= publication.url%>"> <%= publication.citation%> </a></h6>
                     <p class="card-text"><%= publication.description%></p>
-                    <hr>
-                    <a href="#" class="card-link">Highlighted by Synpact</a>
                     <hr>
                     <p>
                         <em>Submitted by: <a href="/users/<%= publication.createdAuthor.id%>"><%= publication.createdAuthor.username %></a>,  <%= moment(publication.createdAt).fromNow() %></em>
@@ -36,8 +44,59 @@
                   </div>
             </div>
 
-        
-            <!-- ADD NEW COMMENT -->
+            <!--  *****************  -->
+            <!-- HIGHLIGHT DISPLAY -->
+            <!--  *****************  -->
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="highlight-head">Highlights By Journals <span id="toggleForm"><i class="fas fa-plus"></i></span></h5>
+
+                     <% if( currentUser && currentUser.isAdmin ) { %>
+                        <!-- add new highlight -->
+                        <div class="text-right">
+                            <a class="btn btn-success float-right" role="button" data-toggle="collapse" href="#collapseHighlight" aria-expanded="false" aria-controls="collapseHighlight">
+                            <i class="fas fa-plus"></i> Add new highlight</a>
+                        </div> 
+
+                        <div class="collapse" id="collapseHighlight">
+                            <form id="add-highlight" action="/publications/<%= publication._id %>/highlights" method="POST">
+                                <div class="mb-2">
+                                    <label for='journalName'>journalName</label>
+                                    <input type="text" class="form-control" id="journalName" placeholder="journalName" name="journalName" required>
+                                </div>
+                                <div class="mb-2">
+                                    <label for='highlightLink'>highlightLink</label>
+                                    <input type="text" class="form-control" id="highlightLink" placeholder="highlightLink" name="highlightLink" required>
+                                </div>
+                                <div class="form-group">
+                                  <button class="btn btn-success btn-sm">Add New Highlight<i class="fas fa-comment-alt"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    <% } %>
+
+                    <!-- display existed highlight -->
+                    <ul class="highlight-ul">
+                        <% publication.highlights.forEach(function(highlight) { %>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <li>
+                                        <span class="delete"><i class="fas fa-trash-alt"></i></span> 
+                                        <a href="<%= highlight.highlightLink %>"> Highlighted By <%= highlight.journalName %> </a>
+                                    </li>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </ul>
+                </div> 
+            </div>
+            <!-- <script type="text/javascript" src="/js/highlights.js"></script> -->
+
+            <!--  *****************  -->
+            <!-- COMMENT DISPLAY -->
+            <!--  *****************  -->
+
             <div class="card">
                 <div class="card-body">
                     <!--Setting up the add new comment button that is used for collapsing-->
@@ -55,7 +114,7 @@
                         <div class="well" style="border-left: 5px solid #00C851;">
                             <% if(!currentUser) { %>
                           <!--If the user is not logged in, direct him to the login page-->
-                          <h5>You need to login before you can comment. <a href="/login">Click here</a> to go to the login page.</h5>
+                          <h5>You need to login before you can comment. <a href="/users/login">Click here</a> to go to the login page.</h5>
                             <% } %>
                             <% if(currentUser) { %>
                           <!--If the user is logged in, show the new comment form-->

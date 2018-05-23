@@ -1,14 +1,17 @@
 var mongoose = require("mongoose");
 
-var bioSchema = new mongoose.Schema({
+var biographySchema = new mongoose.Schema({
+   
    text:String,
-   author:{
+   
+   createdAuthor:{
       id:{
          type:mongoose.Schema.Types.ObjectId,
          ref:"User"
       },
       username:String
    },
+
 });
 
-module.exports = mongoose.model("Bio", bioSchema);
+module.exports = mongoose.model("Biography", biographySchema);

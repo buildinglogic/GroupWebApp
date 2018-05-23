@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 // schema setup
 var publicationSchema = new mongoose.Schema({
 
+    seriesNumber:Number,
     title:String,
     description:String,
     image:String,
@@ -19,7 +20,7 @@ var publicationSchema = new mongoose.Schema({
         type:Date,
         default:Date.now()
     },
-
+ 
     pulicatedAuthors: [
         {
             type:mongoose.Schema.Types.ObjectId,
@@ -33,6 +34,13 @@ var publicationSchema = new mongoose.Schema({
         },
         username:String
     },
+
+    highlights: [
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Highlight"
+        }
+    ],
 
     comments:[
         {

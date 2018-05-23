@@ -13,7 +13,9 @@ var moment = require("moment");
 // REQUIRE MODELS
 var Publication = require("./models/publication");
 var Comment = require("./models/comment");
+var Highlight = require("./models/highlight");
 var User = require("./models/user");
+var Biography = require("./models/biography");
 var Picture = require("./models/picture");
 var Blog = require("./models/blog");
 
@@ -27,6 +29,7 @@ var indexRoutes = require("./routes/index");
 var contactRoutes = require("./routes/contact");
 var userRoutes = require("./routes/users");
 var blogRoutes = require("./routes/blogs");
+var gameRoutes = require("./routes/games");
 
 // seedDB(); 
 // COONNECT DATABASE
@@ -66,6 +69,7 @@ app.use("/publications/:id/comments", commentRoutes);
 app.use("/contact", contactRoutes);
 app.use("/users", userRoutes);
 app.use("/blogs", blogRoutes);
+app.use("/games", gameRoutes);
 
 
 app.listen(3000, '127.0.0.1', function() {

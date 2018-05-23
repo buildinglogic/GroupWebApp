@@ -11,7 +11,7 @@
         </p>
         <p class="lead">
             <form class="form-inline my-2 my-lg-0" action="/publications" method="GET">
-                <input class="form-control mr-sm-2" type="search" placeholder="Title Search" aria-label="Search">
+                <input class="form-control mr-sm-2" type="search" name="search" placeholder="Title Search" aria-label="Search">
                 <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
             </form>
         </p>
@@ -25,7 +25,8 @@
                 <div class="card bg-info">
                     <img class="card-img-top" src="<%= publication.image%>" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title"><%= publication.title %></h5>
+                        <h5 class="card-title text-left"><span class="seriesNumber"><%=publication.seriesNumber %></span> <%= publication.title %></h5>
+                        <p> <%= publication.citation%></p>
                         <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
                         <a href="/publications/<%= publication._id%>" class="btn btn-primary">More info</a>
                     </div>

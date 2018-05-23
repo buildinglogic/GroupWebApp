@@ -9,15 +9,35 @@
         </div>
     </header>
     
+    <!-- display current group members -->
     <div class="row justify-content-center text-center" id="user-grid">
-        <% users.forEach(function(user){ %>
+        <% currentGroupMembers.forEach(function(currentGroupMember){ %>
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="card bg-info">
-                    <img class="card-img-top" src="<%= user.selfie%>" alt="Card image cap">
+                    <img class="card-img-top" src="<%= currentGroupMember.selfie%>" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title"><%= user.firstName user.lastName %></h5>
+                        <h5 class="card-title"><%= currentGroupMember.firstName%> <%=currentGroupMember.lastName %></h5>
+                        <p>
+                            <%= Date.now() %>
+                        </p>
                         <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
-                        <a href="/uses/<%= user._id%>" class="btn btn-primary">More info</a>
+                        <a href="/users/<%= currentGroupMember._id%>" class="btn btn-primary">More info</a>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <!-- display former group members -->
+    <div class="row justify-content-center text-center" id="user-grid">
+        <% formerGroupMembers.forEach(function(formerGroupMember){ %>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card bg-info">
+                    <img class="card-img-top" src="<%= formerGroupMember.selfie%>" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= formerGroupMember.firstName%> <%=formerGroupMember.lastName %></h5>
+                        <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+                        <a href="/users/<%= formerGroupMember._id%>" class="btn btn-primary">More info</a>
                     </div>
                 </div>
             </div>

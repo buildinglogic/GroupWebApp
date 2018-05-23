@@ -1,0 +1,71 @@
+/*customed css for publication show page*/
+
+
+
+/*****************************/
+/*customed highlights card*/
+/*****************************/
+
+h5.highlight-head {
+	margin: 0;
+	padding: 10px 20px;
+	font-size:24px;
+	font-weight:normal;
+	text-transform: uppercase;
+	/*background: #2980b9;*/
+}
+
+input.highlight-input {
+	color:#2980b9;
+	height:40px;
+	width:100%;
+	font-size: 18px;
+	padding:13px 13px 13px 20px;
+	background:#f7f7f7;
+	box-sizing:border-box;
+	border:3px solid rgba(0, 0, 0, 0);
+}
+
+input:focus {
+	background:white;
+	border:2px solid #2980b9;
+	outline:none; /*remove brower default outlien */
+}
+
+span.delete {
+	background: #e74c3c;
+	height:40px;
+	margin-right:20px;
+	text-align: center;
+	color:white;
+	width:0;
+	display: inline-block;
+	transition: width 0.2s linear;
+	opacity: 0;
+}
+
+li:hover span {
+	width:40px;
+	opacity: 1.0; 
+}
+
+ul.highlight-ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+ul.highlight-ul li {
+	height:40px;
+	color:#666;
+	font-size:20px;
+	line-height: 40px;
+/*	padding:3px 13px 3px 20px;*/
+	background: #fff;
+}
+
+ul.highlight-ul li:nth-child(2n) {
+	background:#f7f7f7;
+}
+
+

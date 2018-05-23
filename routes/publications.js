@@ -45,7 +45,7 @@ router.get("/", function(req, res){
     var perPage = 8;
     var pageQuery = parseInt(req.query.page);
     var pageNumber = pageQuery ? pageQuery : 1;
-
+    console.log(req.query);
     if (req.query.search) {
        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
        Publication.find({ "title": regex }).skip((perPage * pageQuery) - perPage).limit(perPage).exec(function(err, foundPublications) {
@@ -63,7 +63,7 @@ router.get("/", function(req, res){
                       current:pageNumber,
                       pages:Math.ceil(count / perPage)
                   });
-               }
+               } 
            });
        }); 
     } else {
@@ -89,6 +89,7 @@ router.get("/", function(req, res){
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
   // get data from form and add to publications array
   console.log(req);
+  var seriesNumber = req.body.publication.seriesNumber;
   var title = req.body.publication.title;
   var desc = req.body.publication.description;
   var citation = req.body.publication.citation;
@@ -106,7 +107,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     // add cloudinary url for the image to the publication object under image property
     var image  = result.secure_url;
     var imageId = result.public_id;
-    var newPublication = {title: title, description: desc, image: image, imageId: imageId, 
+    var newPublication = {seriesNumber: seriesNumber, title: title, description: desc, image: image, imageId: imageId, 
       citation: citation, url: url, publicatedDate: publicatedDate, createdAuthor:createdAuthor};
     // Create a new publication and save to DB
     Publication.create(newPublication, function(err, newlyCreated){
@@ -120,7 +121,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     });
   });
 });
-
+ 
 
 //NEW - RENDER NEW FORM FOR CREATE A NEW PUBLICATION
 router.get("/new", middleware.isLoggedIn, function(req, res){
@@ -209,14 +210,17 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
               imageId = req.body.publication.imageId;
             }
             var publicatedDate = new Date(req.body.publication.publicatedDate);
-            var newPublication = {title: req.body.publication.title, 
+            var newPublication = {
+                                  seriesNumber:req.body.publication.seriesNumber,
+                                  title: req.body.publication.title, 
                                   description: req.body.publication.description,
                                   image: image,
                                   imageId: imageId,
                                   citation:req.body.publication.citation,
                                   url: req.body.publication.url,
                                   publicatedDate: publicatedDate,
-                                  publicatedAuthors: req.body.publication.publicatedAuthors};
+                                  publicatedAuthors: req.body.publication.publicatedAuthors
+                                };
             console.log(newPublication);
             Publication.findByIdAndUpdate(req.params.id, {$set: newPublication}, function(err, publication){
                 if(err){

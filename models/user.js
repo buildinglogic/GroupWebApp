@@ -15,6 +15,11 @@ var UserSchema = new mongoose.Schema({
     selfie:String,
     selfieId:String,
 
+    bio: {
+    	type:mongoose.Schema.Types.ObjectId,
+    	ref:"Biography"
+    },
+
     pictures:[
         {
             type:mongoose.Schema.Types.ObjectId,

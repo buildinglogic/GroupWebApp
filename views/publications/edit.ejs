@@ -9,6 +9,10 @@
         <div class="col-sm-12 col-md-6 col-lg-8">
             <form action="/publications/<%= publication._id %>/?_method=PUT" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
+                    <label for="seriesNumber">Number # Publication</label>
+                    <input class="form-control" id="seriesNumber" type="number" name = "publication[seriesNumber]" value="<%= publication.seriesNumber%>">
+                </div>
+                <div class="form-group">
                     <label for="title">Title</label>
                     <input class="form-control" id="title" type="text" name = "publication[title]" value="<%= publication.title%>">
                 </div>
@@ -36,7 +40,7 @@
                 <div class="form-group">
                     <label for="publicatedAuthors">PublicatedAuthors</label>
                     <input class="form-control" type="text" name="publication[publicatedAuthors]" id="publicatedAuthors" value="<%= publication.publicatedAuthors%>">
-                </div>    
+                </div> 
                 <div class="form-group">
                     <button class="btn btn-lg btn-secondary btn-block">Submit</button>
                 </div>
