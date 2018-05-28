@@ -25,10 +25,12 @@ var seedDB = require("./seeds");
 // REQUIRE ROUTES
 var publicationRoutes = require("./routes/publications");   
 var commentRoutes = require("./routes/comments");
+var highlightRoutes = require("./routes/highlights");
 var indexRoutes = require("./routes/index");
 var contactRoutes = require("./routes/contact");
 var userRoutes = require("./routes/users");
 var blogRoutes = require("./routes/blogs");
+var linkRoutes = require("./routes/links");
 var gameRoutes = require("./routes/games");
 
 // seedDB(); 
@@ -66,12 +68,15 @@ app.use(function(req, res, next) {
 app.use("/", indexRoutes);
 app.use("/publications", publicationRoutes); // take each route, and append "/publications at the start"
 app.use("/publications/:id/comments", commentRoutes);
+app.use("/publications/:id/highlights", highlightRoutes);
 app.use("/contact", contactRoutes);
 app.use("/users", userRoutes);
 app.use("/blogs", blogRoutes);
+app.use("/links", linkRoutes);
 app.use("/games", gameRoutes);
 
 
+// LISTEN TO IP
 app.listen(3000, '127.0.0.1', function() {
    console.log("Resarch Page has started"); 
 });

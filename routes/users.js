@@ -2,6 +2,7 @@ var express = require("express");
 var router  = express.Router();
 var User = require("../models/user");
 var Publication = require("../models/publication");
+var Biography = require("../models/biography");
 var middleware = require("../middleware");
 
 var passport = require("passport");
@@ -15,6 +16,10 @@ var cloudinary = require('cloudinary');
 var async = require("async");
 
 
+
+  // <!--  *****************  -->
+  // <!-- GOOGLE MAP & IMAGE UPLOADING -->
+  // <!--  *****************  -->
  
  // set up google map options
 var options = {
@@ -47,7 +52,13 @@ cloudinary.config({
 });
 
 
-// REGISTER ROUTE
+
+  // <!--  *****************  -->
+  // <!-- REGISTER AND LOGIN -->
+  // <!--  *****************  -->
+
+
+// INDEX - REGISTER ROUTE
 router.get("/register", function(req, res) {
    res.render("users/register", {page:"register"}); 
 });
@@ -128,12 +139,12 @@ router.post("/register", upload.single('image'), function(req, res) {
     });
 });
    
-// show login form
+// INDEX - LOGIN 
 router.get("/login", function(req, res) {
     res.render("users/login", {page:"login"});
 });
 
-// handle login logic
+// CREATE - LOGIN 
 router.post("/login", passport.authenticate("local", 
     {
         successRedirect:"/publications",
@@ -146,8 +157,14 @@ router.post("/login", passport.authenticate("local",
 router.get("/logout", function(req, res) {
     req.logout();
     req.flash("success", "Successfully logged you out");
-    res.redirect("/publications");
+    res.redirect("back");
 });
+
+
+
+  // <!--  *****************  -->
+  // <!-- USER INFO & PROFILE-->
+  // <!--  *****************  -->
 
 
 // INDEX - SHOW ALL USERS
@@ -169,11 +186,10 @@ router.get("/", function(req, res) {
   });
 });
 
- 
 
-// user profile
+// SHOW - USER PROFILE 
 router.get("/:id", function(req, res) {
-   User.findById(req.params.id, function(err, foundUser) {
+   User.findById(req.params.id).populate("bio").exec(function(err, foundUser) {
         if(err || !foundUser) {
             req.flash("error", "User not found");
             // eva(require("locus"));
@@ -190,164 +206,64 @@ router.get("/:id", function(req, res) {
         }
    });
 });
-
  
- // BIO ROUTE
-router.get("/:id/biography/new", middleware.isLoggedIn, function(req, res) {
+ 
+ // CREATE - BIO 
+router.post("/:id/biography", middleware.isLoggedIn, function(req, res) {
   User.findById(req.params.id, function(err, user) {
     if(err || !user) {
       req.flash("error", "user not found");
       res.redirect("back");
     } else {
-      res.render("biography/new", {user: user});
+      Biography.create(req.body.biography, function(err, biography) {
+         if(err) {
+             req.flash("error", "Creation failed");
+             res.redirect("/publications/" + req.params.id);
+         } else {
+             biography.createdAuthor.id = req.user._id;
+             biography.createdAuthor.username = req.user.username;
+             biography.save();
+            user.bio = biography;
+             user.save();
+             req.flash("success", "Successfully created a biography");
+             res.redirect("/users/" + user._id);
+         }
+      });
     }
   });
 });
 
 
+// EDIT - BIO 
+ 
 
-// CREATE - comments 
-router.post("/", middleware.isLoggedIn, function(req, res) {
-    Publication.findById(req.params.id, function(err, publication) {
-        if(err || !publication) {
-            req.flash("error", "publication not found");
-            res.redirect("/publications");
+// UPDATE - BIO
+router.put("/:id/biography/:bio_id", middleware.isLoggedIn, function(req, res) {
+    Biography.findByIdAndUpdate(req.params.bio_id, req.body.bio, function(err, updatedBio) {
+        if(err) {
+            res.redirect("back");
         } else {
-            Comment.create(req.body.comment, function(err, comment) {
-               if(err) {
-                   req.flash("error", "Creation failed");
-                   res.redirect("/publications/" + req.params.id);
-               } else {
-                   // add username and id to comment
-                   comment.createdAuthor.id = req.user._id;
-                   comment.createdAuthor.username = req.user.username;
-                   // save comment
-                   comment.save();
-                   publication.comments.push(comment);
-                   publication.save();
-                   req.flash("success", "Successfully created a publication");
-                   res.redirect("/publications/" + publication._id);
-               }
-            });
+          req.flash("success", "Successfully updated a biography");
+          res.redirect("/users/" + req.params.id);
         }
     });
 });
  
 
 
-
-
-
-// SHOW - shows more info about one publication
-router.get("/:id", function(req, res){
-    //find the publication with provided ID
-    Publication.findById(req.params.id).populate("comments").exec(function(err, foundPublication){
-        if(err || !foundPublication){
-            console.log(err);
-            req.flash("error", "Publication not found");
-            res.redirect("/publications");
-        } else {
-            //render show template with that publication
-            res.render("publications/show", {publication: foundPublication});
-        }
-    });
-});
-
-// EDIT Publication ROUTE
-router.get("/:id/edit", middleware.checkPublicationOwnership, function(req, res){
-    Publication.findById(req.params.id, function(err, foundPublication){
-        if(err) {
-            console.log(err);
-            req.flash("error", err.message);
-            res.redirect("/publications/" + req.params.id);
-        }
-        res.render("publications/edit", {publication: foundPublication});
-    });
-});
-
-// UPDATE Publication ROUTE
-router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'), function(req, res, next){
-    async.waterfall([
-        function(done) {
-            geocoder.geocode(req.body.publication.location, function (err, geoData) {
-                if (err || !geoData.length) {
-                  req.flash('error', 'Invalid address');
-                  return res.redirect('back');
-                }
-                done(null, geoData);
-            });
-        },
-        function(geoData, done) {
-            // handle image uploading
-            Publication.findById(req.params.id, function(err, foundPublication) {
-                if(err) {
-                     req.flash("error", err.message);
-                     return res.redirect("back");
-                }  else {
-                    done(null, foundPublication, geoData);
-                }
-            });
-        },
-        function(foundPublication, geoData, done) {
-            if(req.file) { 
-                cloudinary.v2.uploader.destroy(foundPublication.imageId, function(err, result) {
-                    if(err) {
-                        req.flash("error", err.message);
-                        return res.redirect("back");
-                    } else {
-                        done(null, foundPublication, geoData);
-                    }
-                });
-            } else {
-                done(null, foundPublication, geoData);
-            }
-        },
-        function(foundPublication, geoData, done) {
-            // if new image uploaded, destroy the old one
-            if(req.file) { 
-                cloudinary.uploader.upload(req.file.path, function(result) {
-                    req.body.publication.imageId = result.public_id;
-                    req.body.publication.image = result.secure_url;
-                    done(null, foundPublication, geoData);
-                });
-            } else {
-                done(null, foundPublication, geoData);
-            }
-        },
-        function(foundPublication, geoData) {
-            // update 
-            // var newPublication = {name: req.name, price: price, image: image, imageId: imageId, description: desc, author:author, location: location, lat: lat, lng: lng};
-            req.body.publication.lat = geoData[0].latitude;
-            req.body.publication.lng = geoData[0].longitude;
-            req.body.publication.location = geoData[0].formattedAddress;
-            Publication.findByIdAndUpdate(req.params.id, {$set: req.body.publication}, function(err, publication){
-                if(err){
-                    req.flash("error", err.message);
-                    res.redirect("back");
-                } else {
-                    req.flash("success","Successfully Updated!");
-                    res.redirect("/publications/" + publication._id);
-                }
-            });
-        }
-    ], function(err) {
-        if (err) return next(err);
-        res.redirect('/publications');
-    });
-});
-    
-
-// DESTROY publication ROUTE
-router.delete("/:id",middleware.checkPublicationOwnership, function(req, res){
-   Publication.findByIdAndRemove(req.params.id, function(err){
+// DESTROY - USER
+router.delete("/:id", middleware.isAdmin, function(req, res){
+   User.findByIdAndRemove(req.params.id, function(err){
       if(err){
           req.flash("error", err.message);
           res.redirect("/publications");
       } else {
-          res.redirect("/publications");
+          res.redirect("/users");
       }
    });
 });
+
+
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

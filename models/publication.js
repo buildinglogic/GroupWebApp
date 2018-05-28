@@ -21,12 +21,8 @@ var publicationSchema = new mongoose.Schema({
         default:Date.now()
     },
  
-    pulicatedAuthors: [
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
-        }
-    ],
+    publicatedAuthors: [String],
+
     createdAuthor: {
         id: {
             type:mongoose.Schema.Types.ObjectId,
@@ -46,6 +42,13 @@ var publicationSchema = new mongoose.Schema({
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:"Comment"
+        }
+    ],
+
+    pictures:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Picture"
         }
     ]
 });

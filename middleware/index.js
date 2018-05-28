@@ -4,8 +4,16 @@
 
 
 var middlewareObj = {};
+var User = require("../models/user");
 var Publication = require("../models/publication");
 var Comment = require("../models/comment");
+var Highlight = require("../models/highlight");
+
+
+
+// ====================================================================
+// Check campground owned by user
+// ====================================================================
 
 middlewareObj.checkPublicationOwnership = function(req, res, next) {
     if(req.isAuthenticated()) { // if login or not
@@ -29,6 +37,11 @@ middlewareObj.checkPublicationOwnership = function(req, res, next) {
     }
 }
 
+
+// ====================================================================
+// Check comment owned by user
+// ====================================================================
+
 middlewareObj.checkCommentOwnership = function(req, res, next) {
     if(req.isAuthenticated()) { // if login or not
         Comment.findById(req.params.comment_id, function(err, foundComment) {
@@ -51,12 +64,66 @@ middlewareObj.checkCommentOwnership = function(req, res, next) {
     }
 }
 
+
+// ====================================================================
+// Check that a user is logged in
+// ====================================================================
+
 middlewareObj.isLoggedIn =  function(req, res, next) {
     if(req.isAuthenticated()) {
-        return next();
+      return next();
+    } 
+    req.flash("error", "You need to login"); 
+    res.redirect("/users/login");
+}
+
+
+// ====================================================================
+// Check that a user is admin
+// ====================================================================
+
+middlewareObj.isAdmin =  function(req, res, next) {
+    if(req.isAuthenticated()) {
+        User.findById(req.params.id, function(err, user) {
+          if(err || !user.isAdmin) {
+            req.flash("error", "You are not admin");
+            res.redirect("back"); // not logged in
+          } else {
+            return next();
+          }
+        });
     }
     req.flash("error", "You need to login"); 
     res.redirect("/users/login");
+}
+
+
+// ====================================================================
+// remove highlights and comments before removing publication (still working on this)
+// ====================================================================
+
+middlewareObj.removeHighlightAndComment = function(req, res, next) {
+  Publication.findById(req.params.id, function(err, foundPublication) {
+    if(err) {
+         req.flash("error", err.message);
+         return res.redirect("back");
+    } else {
+      foundPublication.highlights.forEach(function(highlight) {
+        Highlight.findByIdAndRemove(highlight, function(err) {
+          if(err) {
+            res.redirect("back");
+          } else {
+              res.redirect("/publications/" + req.params.id);
+          }
+        });
+        // Highlight.remove({_id : highlight});
+      });
+      foundPublication.comments.forEach(function(comment) {
+        Comment.remove({_id: comment});
+      });
+    }
+    next();
+  });
 }
 
 

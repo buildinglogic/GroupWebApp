@@ -3,40 +3,125 @@
 <div class="container">
 
   <div class="row">
-    <div class="col-sm-6">
+
+    <!--  *****************  -->
+    <!-- BIOGRAPHY DISPLAY -->
+    <!--  *****************  -->
+ 
+    <div class="col-lg-4">
       <div class="card">
         <img class="card-img-top" src="<%= user.selfie %>" alt="user profile image">
         <div class="card-body">
           <h5 class="card-title"><%= user.firstName + " " + user.lastName %></h5>
-          <a class="btn btn-primary" href="mailto:<%= user.email %>"><%= user.email %></a>
-          <p class="card-text">
-            Some quick example text to build on the card title and make up the bulk of the  card's content.Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
+          <hr>
+          <div class="card-text">
+            <p>
+              <% if(user && user.bio) { %>
+                    <%= user.bio.text %>
+              <% } %>
+            </p>
+          </div>
+          
+          <div class="text-right">
+            <a class="btn btn-success btn-sm float-right" role="button" data-toggle="collapse" href="#collapseBio" aria-expanded="false" aria-controls="collapseBio">
+            <i class="fas fa-plus"></i> Add bio </a>
+          </div> 
 
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error quasi similique architecto ad modi sunt quaerat possimus, officiis quos. Voluptatibus repellendus exercitationem, id saepe sunt consectetur non quam sapiente assumenda.
-          </p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+          <div class="collapse" id="collapseBio">
+              <div class="well" style="border-left: 5px solid #00C851;">
+                  <% if(!currentUser) { %>
+                    <h5>You need to login before you can add bio <a href="/users/login">Click here</a> to go to the login page.</h5>
+                  <% } %>
+                  <% if(currentUser && !user.bio) { %>
+                    <h4>Write your bio<i class="fas fa-pencil-alt"></i></h4>
+                    <form id="add-bio-form" action="/users/<%= user._id %>/biography" method="POST">
+                      <div class="form-group">
+                        <input class="form-control" type="text" disabled value="<%= currentUser.username %>">
+                      </div>
+                      <div class="form-group">
+                        <textarea class="form-control" name="biography[text]" placeholder="Write your bio..." form="add-bio-form" rows="5" cols="70"></textarea>
+                      </div>
+                      <div class="form-group">
+                        <button class="btn btn-success btn-sm">biograhy <i class="fas fa-user-edit"></i></button>
+                      </div>
+                  </form>
+                  <% } %>
+              </div>
+          </div>
+            
+          <a class="btn btn-sm btn-warning float-right" role="button" data-toggle="collapse" 
+              href="#collapseEdit" aria-expanded="false" aria-controls="collapseEdit">Edit
+          </a>
+          
+          <!--Edit comment form-->
+          <div class="collapse" id="collapseEdit">
+              <div class="well" style="border-left: 5px solid #ffbb33; margin-top: 15px;">
+                <% if(!currentUser) { %>
+                  <h5>You need to login before you can edit bio <a href="/users/login">Click here</a> to go to the login page.</h5>
+                <% } %>
+                <% if(currentUser && user.bio) { %>
+                  <h4>Edit your biography <i class="fas fa-edit"></i></h4>
+                  <form id="edit-bio-form" action="/users/<%= user._id %>/biography/<%= user.bio._id%>?_method=PUT" method="POST">
+                      <div class="form-group">
+                        <input class="form-control" type="text" disabled value="<%= currentUser.username %>">
+                      </div>
+                      <div class="form-group">
+                        <textarea class="form-control" name="bio[text]" form="edit-bio-form" rows="5" cols="70"><%= user.bio.text %></textarea>
+                      </div>
+                      <div class="form-group">
+                        <button class="btn btn-warning btn-sm">Edit bio <i class="fas fa-user-edit"></i></button>
+                      </div>
+                  </form>
+                <% } %>
+              </div>
+          </div>
+
+          <a class="btn btn-primary btn-sm" href="mailto:<%= user.email %>">email</a>
+          <a href="#" class="btn btn-primary btn-sm">Go !</a>
         </div>
       </div>
     </div>
  
-  	<div class="col-sm-6">
-  		<h3><%= user.username %>'s publications:</h3>
-  		<ul>
-  		<% publications.forEach(function(publication) { %>
-  			<li><a href="/publications/<%= publication.id %>"><%= publication.name %></a></li>
-  		<% }); %>
-  		</ul>
+ 
+    <!--  *****************  -->
+    <!-- PUBLICATION LIST DISPLAY -->
+    <!--  *****************  -->
+
+  	<div class="col-lg-8">
+  		<h3><%= user.username %>'s Publications List</h3>
+
+      <!-- display publications in a grid -->
+      <div class="row justify-content-center text-center" id="publication-grid">
+          <% publications.forEach(function(publication){ %>
+              <!-- <div class="col-lg-3 col-md-4 col-sm-6 mb-4"> -->
+              <div class = 'publication-abstract'>
+                  <div class="card bg-info">
+                      <img class="card-img-top" src="<%= publication.image%>" alt="Card image cap">
+                      <div class="card-body">
+                          <h5 class="card-title text-left"><span class="seriesNumber"><%=publication.seriesNumber %></span> <%= publication.title %></h5>
+                          <a href="<%= publication.citation %>"> <%= publication.citation%></a>
+                      </div>
+                  </div>
+              </div>
+          <% }); %>
+      </div>
+    
   	</div>
+
   </div>
   
-  
+
+    <!--  *****************  -->
+    <!-- HOME MAP DISPLAY -->
+    <!--  *****************  -->
+
   <div class="card text-center">
     <div class="card-header">
       Howntown Google Location
     </div>
     <div class="card-body">
       <h5 class="card-title">Where I come from</h5>
-      <p class="card-text">this is the place I come from, xxxxxxxx.</p>
+      <p class="card-text">this is the place I come from: <em><%= user.location %> </em></p>
     </div>
 
     <div id="map"></div>
@@ -77,5 +162,7 @@
   }
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzr_Z5i7A_pW5C9uIcYEXRt4T3J18aJ9k&callback=initMap"></script>
+
+
 
 <% include ../partials/footer %>

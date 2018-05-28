@@ -1,4 +1,12 @@
 
+
+
+$("#highlight-delete").click(function(){
+
+    //stuff here
+
+});
+
 // delete todo list
 $("ul.highlight-ul").on("click", ".delete", function(event) {
 	$(this).parent().fadeOut(500, function() { // parent() get the parent object

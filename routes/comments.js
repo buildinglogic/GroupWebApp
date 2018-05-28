@@ -8,19 +8,11 @@ var Publication = require("../models/publication");
 var Comment = require("../models/comment");
 var middleware = require("../middleware");
 
-// NEW - comments 
-router.get("/new", middleware.isLoggedIn, function(req, res) {
-    Publication.findById(req.params.id, function(err, publication) {
-        if(err || !publication) {
-            req.flash("error", "Publication not found");
-            res.redirect("/publications");
-        }else {
-            res.render("comments/new", {publication:publication}); 
-        }
-    });
-});
 
-// CREATE - comments 
+// NEW - COMMENT included in publication show.ejs
+
+
+// CREATE - COMMENT 
 router.post("/", middleware.isLoggedIn, function(req, res) {
     Publication.findById(req.params.id, function(err, publication) {
         if(err || !publication) {
@@ -47,26 +39,14 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
     });
 });
 
-// EDIT route - comment 
-router.get("/:comment_id/edit", middleware.checkCommentOwnership, function(req, res) {
-    Publication.findById(req.params.id, function(err, foundPublication) {
-       if(err || !foundPublication) {
-           req.flash("error", "publication not found");
-           return res.redirect("back");
-       } else {
-            Comment.findById(req.params.comment_id, function(err, foundComment) {
-               if(err || !foundComment) {
-                   res.redirect("back");
-               } else {
-                   res.render("comments/edit", {publication_id: req.params.id, comment: foundComment})
-               }
-            });
-       }
-    });
 
-});
+// SHOW - COMMENT  included in publication show.ejs
 
-// comment update route
+
+// EDIT - COMMENT  included in publication show.ejs
+
+
+// UPDATE - COMMENT 
 router.put("/:comment_id", middleware.checkCommentOwnership, function(req, res) {
     Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment) {
         if(err) {
@@ -76,8 +56,9 @@ router.put("/:comment_id", middleware.checkCommentOwnership, function(req, res) 
         }
     });
 });
+ 
 
-// comment destroy route
+// DESTROY - COMMENT 
 router.delete("/:comment_id", middleware.checkCommentOwnership, function(req, res) {
   Comment.findByIdAndRemove(req.params.comment_id, function(err) {
       if(err) {

@@ -4,6 +4,11 @@ body {
   height: 100%;
 }
 
+
+/***********************/
+/* login 
+/************************/
+
 /*style for login*/
 .form-signin {
   width: 100%;
@@ -36,6 +41,22 @@ body {
 }
 
 
+/***********************/
+/* publication 
+/************************/
+
+/*style for seriesNumber*/
+.seriesNumber {
+  font-size: 2em;
+  margin-right: 10px;
+}
+
+.my_img_display {
+  max-width: 100%;
+  max-height: auto
+/*  object-fit: cover;*/
+}
+
 
 .img-thumbnail img{
     width:100%;
@@ -49,14 +70,18 @@ body {
     padding:20px;
 }
 
+
+
+
+
 .delete-form {
     display:inline;
 }
 
+
 /*google map*/
 #map {
     height:400px;
-    width:100%;
 }
 
 /*style for publications*/
@@ -66,10 +91,6 @@ body {
   width:90%;
 }
 
-/*style for seriesNumber*/
-.seriesNumber {
-  font-size: 2em;
-  margin-right: 10px;
-}
+
 
 /*style for pagination*/

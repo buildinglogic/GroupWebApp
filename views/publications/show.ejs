@@ -2,6 +2,7 @@
 
 <div class="container">
 
+
     <div class="row">
 
         <!--  *****************  -->
@@ -9,26 +10,97 @@
         <!--  *****************  -->
 
         <div class="col-md-3">
-            <p class="lead">Publication</p>
-            <div class="list-group">
-                <li class="list-group-item active">Paper Snap</li>
-                <li class="list-group-item">Highlights</li>
-                <li class="list-group-item">Authors</li>
-            </div>
+            <p class="lead">Journal</p>
+            <img class="img-fluid" src="http://i.imgur.com/K3mPv14.jpg" alt="journal">
         </div>
         
-
+ 
         <div class="col-md-9">
 
             <!--  *****************  -->
             <!-- PUBLICATION DISPLAY -->
             <!--  *****************  -->
 
+            <div id="carouselForPublicationShow" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselForPublicationShow" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselForPublicationShow" data-slide-to="1"></li>
+                    <li data-target="#carouselForPublicationShow" data-slide-to="2"></li>
+                  </ol>
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="d-block w-100" src="http://i.imgur.com/K3mPv14.jpg" alt="First slide">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>...</h5>
+                            <p>...</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="http://i.imgur.com/SBEmFpv.jpg" alt="Second slide">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>...</h5>
+                            <p>...</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" src="http://i.imgur.com/emvhOnb.jpg" alt="Third slide">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>...</h5>
+                            <p>...</p>
+                        </div>
+                    </div>
+                  </div>
+                  <a class="carousel-control-prev" href="#carouselForPublicationShow" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carouselForPublicationShow" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+
+            <!-- uploading images for slideshow -->
+            <div>
+                 <% if( currentUser ) { %>
+                    <!-- add new picture -->
+                    <div class="text-right">
+                        <a class="btn btn-success float-right" role="button" data-toggle="collapse" href="#collapsePictureUpload" aria-expanded="false" aria-controls="collapsePictureUpload">
+                            <i class="fas fa-plus"></i> Uploading Images</a>
+                    </div> 
+
+                    <div class="collapse" id="collapsePictureUpload">
+                        <form id="upload-image" action="/....." method="POST" enctype="multipart/form-data">
+                            <div class="mb-2">
+                                <label for='pictureTitle'>picture title</label>
+                                <input type="text" class="form-control" id="pictureTitle" placeholder="picture title" name="picture[pictureTitle]">
+                            </div>
+                            <div class="mb-2">
+                                <label for='pictureDesc'>picture description</label>
+                                <input type="text" class="form-control" id="pictureDesc" placeholder="picture description" name="picture[pictureDesc]">
+                            </div>
+                            <div class="mb-2">
+                                <label for='pictureLink'>picture link (if from onine source)</label>
+                                <input type="text" class="form-control" id="pictureLink" placeholder="pictureLink" name="picture[pictureLink]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Image</label>
+                                <input type="file" id="image" name="image" accept="image/*">
+                            </div>
+                            <div class="form-group">
+                              <button class="btn btn-success btn-sm">Add New Picture <i class="fas fa-images"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                <% } %>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <img class="card-img-top mb-5 mt-5" src="<%= publication.image%>" alt="Card image cap">
                     <h5><a class="card-title"><%= publication.title%></a></h5>
                     <h6 class="card-subtitle mb-2 text-muted"><%= publication.publicatedDate.toDateString()%> (Publicated Date)</h6>
+                    <h6>  <strong>Authors</strong>: <%= publication.publicatedAuthors%> </h6>
                     <h6> <a href="<%= publication.url%>"> <%= publication.citation%> </a></h6>
                     <p class="card-text"><%= publication.description%></p>
                     <hr>
@@ -50,7 +122,7 @@
             
             <div class="card">
                 <div class="card-body">
-                    <h5 class="highlight-head">Highlights By Journals <span id="toggleForm"><i class="fas fa-plus"></i></span></h5>
+                    <h5 class="highlight-head">Highlights By Journals <span id="toggleForm"><i class="fas fa-thumbs-up"></i></span></h5>
 
                      <% if( currentUser && currentUser.isAdmin ) { %>
                         <!-- add new highlight -->
@@ -63,14 +135,14 @@
                             <form id="add-highlight" action="/publications/<%= publication._id %>/highlights" method="POST">
                                 <div class="mb-2">
                                     <label for='journalName'>journalName</label>
-                                    <input type="text" class="form-control" id="journalName" placeholder="journalName" name="journalName" required>
+                                    <input type="text" class="form-control" id="journalName" placeholder="journalName" name="highlight[journalName]" required>
                                 </div>
                                 <div class="mb-2">
                                     <label for='highlightLink'>highlightLink</label>
-                                    <input type="text" class="form-control" id="highlightLink" placeholder="highlightLink" name="highlightLink" required>
+                                    <input type="text" class="form-control" id="highlightLink" placeholder="highlightLink" name="highlight[highlightLink]" required>
                                 </div>
                                 <div class="form-group">
-                                  <button class="btn btn-success btn-sm">Add New Highlight<i class="fas fa-comment-alt"></i></button>
+                                  <button class="btn btn-success btn-sm">Add New Highlight <i class="fas fa-thumbs-up"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -82,13 +154,23 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <li>
-                                        <span class="delete"><i class="fas fa-trash-alt"></i></span> 
-                                        <a href="<%= highlight.highlightLink %>"> Highlighted By <%= highlight.journalName %> </a>
+                                        <!-- destroy a existed highlight -->
+                                        <% if( currentUser && currentUser.isAdmin ) { %>
+                                            <form class="delete-form" action="/publications/<%= publication._id %>/highlights/<%= highlight._id%>?_method=DELETE" method="POST">
+                                                <input type="submit" class="btn btn-sm btn-danger" value="Delete">   
+                                            </form>
+                                        <% } %> 
+                                         <em>Highlighted By  
+                                            <a href="<%= highlight.highlightLink %>">  <%= highlight.journalName %> </a>
+                                        </em>
                                     </li>
                                 </div>
                             </div>
                         <% }) %>
                     </ul>
+
+
+
                 </div> 
             </div>
             <!-- <script type="text/javascript" src="/js/highlights.js"></script> -->

@@ -5,21 +5,22 @@
         <div class="col-md-12 text-center">
             <h1>Edit "<%= publication.title %>"</h1>
         </div>
-        
+         
         <div class="col-sm-12 col-md-6 col-lg-8">
-            <form action="/publications/<%= publication._id %>/?_method=PUT" method="POST" enctype="multipart/form-data">
+            <form id="edit-publication-form" action="/publications/<%= publication._id %>/?_method=PUT" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="seriesNumber">Number # Publication</label>
                     <input class="form-control" id="seriesNumber" type="number" name = "publication[seriesNumber]" value="<%= publication.seriesNumber%>">
                 </div>
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input class="form-control" id="title" type="text" name = "publication[title]" value="<%= publication.title%>">
+                    <textarea class="form-control" id="title" type="text" name = "publication[title]" form="edit-publication-form" rows="3" cols="70"><%= publication.title%></textarea>
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <input class="form-control" id="description" type="text" name= "publication[description]" value="<%= publication.description%>">
+                    <textarea class="form-control" id="description" type="text" name= "publication[description]" form="edit-publication-form" rows="5" cols="70"><%= publication.description%></textarea>
                 </div>
+ 
                 <div class="form-group">
                     <label for="image">Uploading New Image</label>
                     <input type="file" id="image" name="image" accept="image/*">
@@ -34,7 +35,7 @@
                     <input class="form-control" type="text" name="publication[url]" id="url" value="<%= publication.url%>">
                 </div>
                 <div class="form-group">
-                    <label for="publicatedDate">PublicatedDate</label>
+                    <label for="publicatedDate">PublicatedDate (no space between)</label>
                     <input class="form-control" type="text" name="publication[publicatedDate]" id="publicatedDate" value="<%= publication.publicatedDate.getFullYear() %>-<%=publication.publicatedDate.getMonth()%>-<%= publication.publicatedDate.getDate()%>">
                 </div>
                 <div class="form-group">

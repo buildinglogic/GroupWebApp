@@ -8,22 +8,11 @@
 
 h5.highlight-head {
 	margin: 0;
-	padding: 10px 20px;
+	/*padding: 10px 20px;*/
 	font-size:24px;
 	font-weight:normal;
 	text-transform: uppercase;
 	/*background: #2980b9;*/
-}
-
-input.highlight-input {
-	color:#2980b9;
-	height:40px;
-	width:100%;
-	font-size: 18px;
-	padding:13px 13px 13px 20px;
-	background:#f7f7f7;
-	box-sizing:border-box;
-	border:3px solid rgba(0, 0, 0, 0);
 }
 
 input:focus {
@@ -67,5 +56,9 @@ ul.highlight-ul li {
 ul.highlight-ul li:nth-child(2n) {
 	background:#f7f7f7;
 }
+
+
+
+
 
 

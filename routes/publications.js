@@ -1,6 +1,8 @@
 var express = require("express");
 var router  = express.Router();
 var Publication = require("../models/publication");
+var Highlight = require("../models/highlight");
+var Comment = require("../models/comment");
 var middleware = require("../middleware");
 var NodeGeocoder = require('node-geocoder');
 var multer = require('multer');
@@ -83,9 +85,15 @@ router.get("/", function(req, res){
         });
     }
 });
+
+
+// NEW - RENDER NEW FORM FOR CREATE A NEW PUBLICATION
+router.get("/new", middleware.isLoggedIn, function(req, res){
+   res.render("publications/new"); 
+});
  
 
-//CREATE - ADD NEW PUBLICATION TO DB
+// CREATE - ADD NEW PUBLICATION TO DB
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
   // get data from form and add to publications array
   console.log(req);
@@ -96,6 +104,8 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
   var url = req.body.publication.url;
   var publicatedDate = new Date(req.body.publication.publicatedDate);
   //   var image = req.body.image;
+
+  var authors = req.body.publication.publicatedAuthors.split(",");
   
   var createdAuthor = {
       id: req.user._id,
@@ -109,11 +119,16 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     var imageId = result.public_id;
     var newPublication = {seriesNumber: seriesNumber, title: title, description: desc, image: image, imageId: imageId, 
       citation: citation, url: url, publicatedDate: publicatedDate, createdAuthor:createdAuthor};
+    eval(require("locus"));
     // Create a new publication and save to DB
     Publication.create(newPublication, function(err, newlyCreated){
         if(err){
             console.log(err);
         } else {
+          authors.forEach(function(author) {
+            newlyCreated.publicatedAuthors.push(author);
+          });
+            publication.save();
             //redirect back to publications page
             console.log(newlyCreated);
             res.redirect("/publications");
@@ -123,16 +138,11 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
 });
  
 
-//NEW - RENDER NEW FORM FOR CREATE A NEW PUBLICATION
-router.get("/new", middleware.isLoggedIn, function(req, res){
-   res.render("publications/new"); 
-});
-
 
 // SHOW - DISPLAY INFO OF ONE PUBLICATION
 router.get("/:id", function(req, res){
     //find the publication with provided ID
-    Publication.findById(req.params.id).populate("comments").exec(function(err, foundPublication){
+    Publication.findById(req.params.id).populate("comments").populate("highlights").exec(function(err, foundPublication){
         if(err || !foundPublication){
             console.log(err);
             req.flash("error", "Publication not found");
@@ -158,7 +168,7 @@ router.get("/:id/edit", middleware.checkPublicationOwnership, function(req, res)
 });
 
 
-// UPDATE Publication ROUTE
+// UPDATE - UPADATE A PUBLICATIOIN BACK FROM EDIT
 router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'), function(req, res, next){
     async.waterfall([
         function(done) {
@@ -200,7 +210,7 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
         },
         function(foundPublication) {
             // update 
-            var image;
+            var image; 
             var imageId;
             if(!req.file) {
               image = foundPublication.image;
@@ -210,6 +220,8 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
               imageId = req.body.publication.imageId;
             }
             var publicatedDate = new Date(req.body.publication.publicatedDate);
+            var authors = req.body.publication.publicatedAuthors.split(",");
+
             var newPublication = {
                                   seriesNumber:req.body.publication.seriesNumber,
                                   title: req.body.publication.title, 
@@ -219,14 +231,18 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
                                   citation:req.body.publication.citation,
                                   url: req.body.publication.url,
                                   publicatedDate: publicatedDate,
-                                  publicatedAuthors: req.body.publication.publicatedAuthors
                                 };
             console.log(newPublication);
+
             Publication.findByIdAndUpdate(req.params.id, {$set: newPublication}, function(err, publication){
                 if(err){
                     req.flash("error", err.message);
                     res.redirect("back");
                 } else {
+                  authors.forEach(function(author) {
+                    publication.publicatedAuthors.push(author);
+                  });
+                  publication.save();
                     req.flash("success","Successfully Updated!");
                     res.redirect("/publications/" + publication._id);
                 }
@@ -238,18 +254,23 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
     });
 });
     
-
-// DESTROY publication ROUTE
+ 
+// DESTROY - DELETE A PUBLICATOIN 
 router.delete("/:id",middleware.checkPublicationOwnership, function(req, res){
-   Publication.findByIdAndRemove(req.params.id, function(err){
+    // destroy the publication
+    Publication.findByIdAndRemove(req.params.id, function(err){
       if(err){
           req.flash("error", err.message);
           res.redirect("/publications");
       } else {
           res.redirect("/publications");
       }
-   });
+    });
+   
 });
+
+
+
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

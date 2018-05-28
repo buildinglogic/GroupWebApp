@@ -1,6 +1,6 @@
 <% include ../partials/header %>
 
-
+ 
 
 <div class="container">
     <div class="row justify-content-center"> 
@@ -9,7 +9,7 @@
         </div>
         
         <div class="col-sm-12 col-md-6 col-lg-8">
-            <form action="/publications" method="POST" enctype="multipart/form-data">
+            <form id="add-publication-form" action="/publications" method="POST" enctype="multipart/form-data">
             <!--<form action="/publications" method="POST">-->
                 <div class="form-group">
                     <label for="seriesNumber">Number # Publication</label>
@@ -17,11 +17,11 @@
                 </div>
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input class="form-control" id="title" type="text" name = "publication[title]" placeholder="publication title">
+                    <textarea class="form-control" id="title" type="text" name = "publication[title]" form="add-publication-form" rows="3" cols="70"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <input class="form-control" id="description" type="text" name= "publication[description]" placeholder="description">
+                    <textarea class="form-control" id="description" type="text" name= "publication[description]" form="add-publication-form" rows="5" cols="70"></textarea>
                 </div>
                 <!--<div class="form-group">-->
                 <!--    <input class="form-control" type="text" name= "image" placeholder="image url">-->
@@ -39,7 +39,7 @@
                     <input class="form-control" type="text" name="publication[url]" id="url" placeholder="link to the publication">
                 </div>
                 <div class="form-group">
-                    <label for="publicatedDate">PublicatedDate</label>
+                    <label for="publicatedDate">PublicatedDate (no space between)</label>
                     <input class="form-control" type="text" name="publication[publicatedDate]" id="publicatedDate" placeholder="YYYY-mm-dd">
                 </div>
                 <div class="form-group">
