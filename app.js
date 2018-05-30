@@ -17,6 +17,7 @@ var Highlight = require("./models/highlight");
 var User = require("./models/user");
 var Biography = require("./models/biography");
 var Picture = require("./models/picture");
+var Journal = require("./models/journal");
 var Blog = require("./models/blog");
 
 var seedDB = require("./seeds");

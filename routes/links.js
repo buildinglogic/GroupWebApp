@@ -5,14 +5,14 @@
 var express = require("express");
 var router  = express.Router();
 var Publication = require("../models/publication");
-var Picture = require("../models/picture");
+var Journal = require("../models/journal");
 var middleware = require("../middleware");
 var NodeGeocoder = require('node-geocoder');
 var multer = require('multer');
 var cloudinary = require('cloudinary');
 var async = require("async");
 
-
+ 
  // GOOGLE MAP API SETTING
 var options = {
   provider: 'google',
@@ -46,10 +46,16 @@ cloudinary.config({
 
 
 
-
 // INDEX - LINK 
 router.get("/", function(req, res) {
-  res.render("links/index");
+  Journal.find({}, function(err, allJournals) {
+    // error handle find for current members
+    if(err){
+      console.log(err);
+    } else {
+      res.render("links/index", {allJournals : allJournals});
+    }
+  });
 });
 
 
@@ -62,67 +68,30 @@ router.get("/new", middleware.isLoggedIn, function(req, res){
 // CREATE - LINK
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
 
-  var title = req.body.picture.title;
-  var desc = req.body.picture.description;
+  var title = req.body.journal.title;
+  var journalLink = req.body.journal.journalLink;
+  var coverLink = req.body.journal.coverLink;
   //   var image = req.body.image;
-  
-  var createdAuthor = {
-      id: req.user._id,
-      username: req.user.username
-  }
 
-  geocoder.geocode(req.body.picture.location, function (err, data) {
-      if (err) {
-        req.flash('error', 'Invalid address');
-        return res.redirect('back');
-      }
-      var lat;
-      var lng;
-      var location;
-      if(data.length) {
-        lat = data[0].latitude;
-        lng = data[0].longitude;
-        location = data[0].formattedAddress;
-      }
-      
-      // get the uploading image url
-      cloudinary.uploader.upload(req.file.path, function(result) {
-          // add cloudinary url for the image to the publication object under image property
-          var image = result.secure_url;
-          var imageId = result.public_id;
+    var newJournal = new Journal (
+    {
+        title: title,
+        journalLink: journalLink,
+        coverLink: coverLink,
+    });
 
-          var newPicture = new Picture (
-          {
-              title: title,
-              description: desc,
-              image: image,
-              imageId: imageId,
-              createdAuthor: createdAuthor,
-              location: location,
-              lat: lat,
-              lng: lng,
-          });
-
-          Picture.create(newPicture, function(err, newlyCreated){
-              if(err){
-                  console.log(err);
-              } else {
-                  //redirect back to pictures page
-                  console.log(newlyCreated);
-                  res.redirect("/links");
-              }
-          });
-      });
-  });
+    Journal.create(newJournal, function(err, newlyCreated){
+        if(err){
+            console.log(err);
+        } else {
+            //redirect back to pictures page
+            console.log(newlyCreated);
+            res.redirect("/links");
+        }
+    });
 
 });
   
-
-
-
-
-
-
 
 
 // SHOW - COMMENT  included in publication show.ejs

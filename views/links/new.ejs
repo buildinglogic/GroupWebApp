@@ -1,0 +1,38 @@
+<% include ../partials/header %>
+
+ 
+
+<div class="container">
+    <div class="row justify-content-center"> 
+        <div class="col-md-12 text-center">
+            <h1>Add a journal journal</h1>
+        </div>
+        
+
+        <div class="col-sm-12 col-md-6 col-lg-8">
+            <form id="add-journal-form" action="/links" method="POST" enctype="multipart/form-data">
+            <!--<form action="/links" method="POST">-->
+                <div class="form-group">
+                    <label for="title">Title (no space allowed, keep short)</label>
+                    <textarea class="form-control" id="title" type="text" name = "journal[title]" form="add-journal-form" rows="2" cols="70"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="journalLink">link to journal</label>
+                    <textarea class="form-control" id="journalLink" type="text" name= "journal[journalLink]" form="add-journal-form" rows="2" cols="70"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="coverLink">link to journal cover image</label>
+                    <textarea class="form-control" id="coverLink" type="text" name= "journal[coverLink]" placeholder="" form="add-journal-form" rows="2" cols="70"></textarea>
+                </div>
+ 
+                <div class="form-group">
+                    <button class="btn btn-lg btn-secondary btn-block">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<% include ../partials/footer %>

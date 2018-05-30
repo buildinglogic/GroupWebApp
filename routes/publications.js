@@ -1,8 +1,22 @@
+
+// ====================================================================
+// PUBLICATION ROUTES
+// ====================================================================
+
+
+//******************************************************************
+// REFERENCE
+// destroy: https://www.udemy.com/the-web-developer-bootcamp/learn/v4/questions/2959924
+// code-refraction: https://github.com/nax3t/yelp-camp-refactored
+//******************************************************************
+
+
 var express = require("express");
 var router  = express.Router();
 var Publication = require("../models/publication");
 var Highlight = require("../models/highlight");
 var Comment = require("../models/comment");
+var Journal = require("../models/journal");
 var middleware = require("../middleware");
 var NodeGeocoder = require('node-geocoder');
 var multer = require('multer');
@@ -100,6 +114,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
   var seriesNumber = req.body.publication.seriesNumber;
   var title = req.body.publication.title;
   var desc = req.body.publication.description;
+  var journal = req.body.publication.journal;
   var citation = req.body.publication.citation;
   var url = req.body.publication.url;
   var publicatedDate = new Date(req.body.publication.publicatedDate);
@@ -117,7 +132,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
     // add cloudinary url for the image to the publication object under image property
     var image  = result.secure_url;
     var imageId = result.public_id;
-    var newPublication = {seriesNumber: seriesNumber, title: title, description: desc, image: image, imageId: imageId, 
+    var newPublication = {seriesNumber: seriesNumber, title: title, description: desc, image: image, imageId: imageId, journal: journal,
       citation: citation, url: url, publicatedDate: publicatedDate, createdAuthor:createdAuthor};
     eval(require("locus"));
     // Create a new publication and save to DB
@@ -148,8 +163,19 @@ router.get("/:id", function(req, res){
             req.flash("error", "Publication not found");
             res.redirect("/publications");
         } else {
-            //render show template with that publication
-            res.render("publications/show", {publication: foundPublication});
+          console.log(foundPublication);
+          Journal.find({title: foundPublication.journal}, function(err, foundJournal) {
+            if(err || !foundJournal) {
+              console.log(err);
+              req.flash("error", "Journal not found");
+              res.redirect("/publications");
+            } else {
+              console.log(foundJournal);
+              //render show template with that publication
+              res.render("publications/show", {publication: foundPublication, journal: foundJournal[0]});
+            }
+          });
+            
         }
     });
 });
@@ -228,6 +254,7 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
                                   description: req.body.publication.description,
                                   image: image,
                                   imageId: imageId,
+                                  journal: req.body.publication.journal,
                                   citation:req.body.publication.citation,
                                   url: req.body.publication.url,
                                   publicatedDate: publicatedDate,
@@ -255,21 +282,41 @@ router.put("/:id", middleware.checkPublicationOwnership, upload.single('image'),
 });
     
  
-// DESTROY - DELETE A PUBLICATOIN 
-router.delete("/:id",middleware.checkPublicationOwnership, function(req, res){
-    // destroy the publication
-    Publication.findByIdAndRemove(req.params.id, function(err){
-      if(err){
-          req.flash("error", err.message);
-          res.redirect("/publications");
+// DESTROY - DELETE A PUBLICATOIN  AND COMMENTS & HIGHLIGHTS REFERED BY THIS PUBLIATION
+router.delete("/:id", middleware.isLoggedIn, middleware.checkPublicationOwnership, function(req, res){
+    Comment.remove({
+      _id: {
+        $in: req.publication.comments
+      }
+    }, function(errComment) {
+      if(errComment) {
+        req.flash('error', errComment.message);
+        res.redirect('/');
       } else {
-          res.redirect("/publications");
+        Highlight.remove({
+          _id: {
+            $in: req.publication.highlights
+          }
+        }, function(errHighlight) {
+          if(err) {
+              req.flash('error', errHighlight.message);
+              res.redirect('/');
+          } else {
+              req.publication.remove(function(errPublication) {
+                if(err) {
+                    req.flash('error', errPublication.message);
+                    return res.redirect('/');
+                }
+                req.flash('error', 'Publication deleted!');
+                res.redirect('/publications');
+              });
+          }
+        });
       }
     });
-   
 });
 
-
+// put second query into the callback of first query, so the second query won't be executed untill the first one finished
 
 
 function escapeRegex(text) {

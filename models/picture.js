@@ -6,7 +6,6 @@ var pictureSchema = new mongoose.Schema({
     description:String,
     image:String,
     imageId:String,
-    isJournal:{type:Boolean, default:false},
 
     createdAuthor:{
       id:{

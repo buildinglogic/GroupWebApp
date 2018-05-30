@@ -9,6 +9,7 @@ var publicationSchema = new mongoose.Schema({
     image:String,
     imageId:String,
     
+    journal: String,
     citation: String,
     url:String,
 
