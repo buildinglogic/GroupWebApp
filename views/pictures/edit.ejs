@@ -1,0 +1,46 @@
+<% include ../partials/header %>
+
+ 
+
+<div class="container">
+    <div class="row justify-content-center"> 
+
+        <div class="col-md-12 text-center">
+            <h1>Edit picture</h1>
+        </div> 
+        
+        <div class="col-sm-12 col-md-6 col-lg-8">
+            <form id="add-picture-form" action="/pictures/<%= picture._id %>/?_method=PUT" method="POST" enctype="multipart/form-data">
+            	<div class="form-group">
+                    <label for="whoOwns">The picture belongs to [user/publication]</label>
+                    <input class="form-control" id="whoOwns" type="text" name = "picture[whoOwns]" value="<%= picture.whoOwns %>">
+                </div>
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <textarea class="form-control" id="title" type="text" name = "picture[title]" value="<%= picture.title %>" form="add-picture-form" rows="2" cols="70"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" type="text" name= "picture[description]" value="picture.description" form="add-picture-form" rows="5" cols="70"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">Image</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+ 
+                <div class="form-group">
+                      <label for="location">Picture Location</label>
+                      <input class="form-control" id="location" type="text" name="picture[location]" value="picture.location" placeholder="Durham, North Carolina, USA">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-secondary btn-block">Submit</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+<% include ../partials/footer %>

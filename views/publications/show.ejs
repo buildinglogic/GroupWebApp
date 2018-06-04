@@ -100,6 +100,7 @@
                     <img class="card-img-top mb-5 mt-5" src="<%= publication.image%>" alt="Card image cap">
                     <h5><a class="card-title"><%= publication.title%></a></h5>
                     <h6 class="card-subtitle mb-2 text-muted"><%= publication.publicatedDate.toDateString()%> (Publicated Date)</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">DOI: <%= publication.DOI%></h6>
                     <h6>  <strong>Authors</strong>: <%= publication.publicatedAuthors%> </h6>
                     <h6> <a href="<%= publication.url%>"> <%= publication.citation%> </a></h6>
                     <p class="card-text"><%= publication.description%></p>
@@ -222,7 +223,7 @@
                     <% if (publication.comments.length === 0) { %>
                           <em style="color: grey;">No comments yet.</em>
                     <% } %>
-                    
+                     
                     <!--Display comments by looping through them-->
                     <% publication.comments.forEach(function(comment) { %>
                         <div class="row">

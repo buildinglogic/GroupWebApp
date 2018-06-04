@@ -1,0 +1,52 @@
+<% include ../partials/header %>
+
+
+<div class="container">
+
+  	<h1 class="my-4 text-center text-lg-left">All pictures for users and publications</h1>
+  	<div class="row justify-content-md-center">
+    	<a class="btn btn-outline-secondary float-left" href="/pictures/new">Add a new picture</a>
+    </div>
+
+    <hr>
+
+    <!-- display user pictures -->
+	<div class="row justify-content-center text-center" id="link-grid">
+	    <% allUserPictures.forEach(function(userPicture){ %>
+	        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+	            <div class="card journal-card">
+	                <img class="card-img-top img-fluid d-block mx-auto" src="<%= userPicture.imageId%>" alt="Card image cap">
+	                <div class="card-body journal-caption">
+	                    <h5 class="card-title"><%= userPicture.title%></h5>
+	                    <a href="" class="btn btn-dark">Edit</a>
+	                    <a href="" class="btn btn-danger">Delete</a>
+	                </div>
+	            </div>
+	        </div>
+	    <% }); %>
+	</div>
+
+	<hr>
+
+	<!-- display publication pictures -->
+	<div class="row justify-content-center text-center" id="link-grid">
+	    <% allPublicationPictures.forEach(function(publicationPicture){ %>
+	        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+	            <div class="card journal-card">
+	                <img class="card-img-top img-fluid d-block mx-auto" src="<%= publicationPicture.imageId%>" alt="Card image cap">
+	                <div class="card-body journal-caption">
+	                    <h5 class="card-title"><%= publicationPicture.title%></h5>
+	                    <a href="" class="btn btn-dark">Edit</a>
+	                    <a href="" class="btn btn-danger">Delete</a>
+	                </div>
+	            </div>
+	        </div>
+	    <% }); %>
+	</div>
+
+
+</div>
+
+ 
+
+<% include ../partials/footer %>

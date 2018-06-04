@@ -2,6 +2,8 @@ var mongoose = require("mongoose");
 
 var pictureSchema = new mongoose.Schema({
     
+    belongsToType:String,
+    whoOwns:String,
     title:String,
     description:String,
     image:String,

@@ -11,7 +11,7 @@ var middleware = require("../middleware");
 
 // NEW - COMMENT included in publication show.ejs
 
-
+ 
 // CREATE - COMMENT 
 router.post("/", middleware.isLoggedIn, function(req, res) {
     Publication.findById(req.params.id, function(err, publication) {
