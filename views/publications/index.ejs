@@ -1,18 +1,22 @@
 <% include ../partials/indexheader %>
-
+ 
 <!-- Page Header -->
-<header class="masthead" style="background-image: url('img/home-bg.jpg')">
+<header class="masthead" style="background-image: url('images/ml-chem2.jpg')">
     <div class="overlay"></div>
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-md-10 mx-auto">
                     <div class="site-heading">
                         <h1>Publications Page</h1>
-                        <span class="subheading">all publications sites, this page contains all research, bala bala</span>
+                        <span class="subheading">
+                            Integrating quautum computing with machine learning.
+                            New application directions for AI.  
+                        </span>
+                        <br>
                         <div class="">
                             <a class="btn btn-outline-secondary float-left" href="/publications/new">Add new publication</a>
                             <form class="form-inline my-2 my-lg-0 float-right" action="/publications" method="GET">
-                                <input class="form-control mr-sm-2" type="search" name="search" placeholder="Title Search" aria-label="Search">
+                                <input class="btn btn-outline-secondary" type="search" name="search" placeholder="Title Search" aria-label="Search">
                                 <input class="btn btn-outline-secondary" type="submit" value="Search">
                             </form>
                         </div>
@@ -36,7 +40,10 @@
                 <div class="card bg-info">
                     <img class="card-img-top my_img_display" src="<%= publication.image%>" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title text-left"><span class="seriesNumber"><%=publication.seriesNumber %></span> <%= publication.title %></h5>
+                        <h5 class="card-title text-left">
+                            <span class="seriesNumber"><%=publication.seriesNumber %></span> 
+                            <%= publication.title %>
+                        </h5>
                         <p> <%= publication.citation%></p>
                         <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
                         <a href="/publications/<%= publication._id%>" class="btn btn-primary">More info</a>
@@ -45,7 +52,7 @@
             </div>
         <% }); %>
     </div>
-    
+     
  
     <!--display page number index-->
     <nav aria-label="publications pages">

@@ -110,7 +110,7 @@ router.get("/new", middleware.isLoggedIn, function(req, res){
 // CREATE - ADD NEW PUBLICATION TO DB
 router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, res){
 	// get data from form and add to publications array
-	console.log(req);
+	//console.log(req);
 	var seriesNumber = req.body.publication.seriesNumber;
 	var DOI = req.body.publication.DOI;
 	var title = req.body.publication.title;
@@ -122,12 +122,12 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
 	//   var image = req.body.image;
 
 	var authors = req.body.publication.publicatedAuthors.split(",");
-	  
-	var createdAuthor = {
-	  	id: req.user._id,
-	  	username: req.user.username
-	}
 
+	var createdAuthor = {
+		id: req.user._id,
+		username: req.user.username
+	}
+ 
 	// get the uploading image url
 	cloudinary.uploader.upload(req.file.path, function(result) {
 		// add cloudinary url for the image to the publication object under image property
@@ -135,7 +135,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
 		var imageId = result.public_id;
 		var newPublication = {seriesNumber: seriesNumber, DOI: DOI, title: title, description: desc, image: image, imageId: imageId, journal: journal,
 			citation: citation, url: url, publicatedDate: publicatedDate, createdAuthor:createdAuthor};
-			eval(require("locus"));
+			//eval(require("locus"));
 		// Create a new publication and save to DB
 		Publication.create(newPublication, function(err, newlyCreated){
 			if(err){
@@ -144,9 +144,9 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function(req, re
 				authors.forEach(function(author) {
 					newlyCreated.publicatedAuthors.push(author);
 				});
-				publication.save();
+				newlyCreated.save();
 				//redirect back to publications page
-				console.log(newlyCreated);
+				//console.log(newlyCreated);
 				res.redirect("/publications");
 			}
 		});
@@ -166,17 +166,16 @@ router.get("/:id", function(req, res){
 		} else {
 			console.log(foundPublication);
 			Journal.find({title: foundPublication.journal}, function(err, foundJournal) {
-				if(err || !foundJournal) {
+				if(err || !foundJournal.length) {
 					console.log(err);
-					req.flash("error", "Journal not found");
+					req.flash("error", "Journal not found, add the coreesponding journal first");
 					res.redirect("/publications");
 				} else {
 					console.log(foundJournal);
-			  //render show template with that publication
-			  res.render("publications/show", {publication: foundPublication, journal: foundJournal[0]});
-			}
-		});
-
+			  		//render show template with that publication
+			  		res.render("publications/show", {publication: foundPublication, journal: foundJournal[0]});
+				}
+			});
 		}
 	});
 });
@@ -300,12 +299,12 @@ router.delete("/:id", middleware.isLoggedIn, middleware.checkPublicationOwnershi
 					$in: req.publication.highlights
 				}
 			}, function(errHighlight) {
-				if(err) {
+				if(errHighlight) {
 					req.flash('error', errHighlight.message);
 					res.redirect('/');
 				} else {
 					req.publication.remove(function(errPublication) {
-						if(err) {
+						if(errPublication) {
 							req.flash('error', errPublication.message);
 							return res.redirect('/');
 						}

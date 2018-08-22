@@ -80,6 +80,6 @@ app.use("/games", gameRoutes);
 
 
 // LISTEN TO IP
-app.listen(3000, '127.0.0.1', function() {
-   console.log("Resarch Page has started"); 
+app.listen(process.env.PORT, process.env.IP, function() {
+   console.log("Resarch Page has started" + process.env.PORT + process.env.IP); 
 });
