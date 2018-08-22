@@ -158,5 +158,10 @@ router.post('/reset/:token', function(req, res) {
     });
 });
 
+// DEVELOPMENT NOTES ROUTE
+router.get("/developmentnotes", function(req, res) {
+    res.render("developmentnotes"); 
+});
+
 
 module.exports = router;
